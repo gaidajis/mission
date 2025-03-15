@@ -11,37 +11,33 @@ void main() async {
   await Firebase.initializeApp();
 
   runApp(MyApp());
-
 }
 
 class MyApp extends StatelessWidget {
   @override
- Widget build(BuildContext context) {
-     return MaterialApp(
+  Widget build(BuildContext context) {
+    return MaterialApp(
       title: 'The Mission!',
       theme: ThemeData(
-         fontFamily: 'Pacifico',
-         primarySwatch: AppTheme.primarySwatch,
-         scaffoldBackgroundColor: AppTheme.lightGrey,
+        fontFamily: 'Pacifico',
+        primarySwatch: AppTheme.primarySwatch,
+        scaffoldBackgroundColor: AppTheme.lightGrey,
         appBarTheme: AppBarTheme(
           backgroundColor: AppTheme.lightBlue,
           foregroundColor: AppTheme.darkGrey,
         ),
-         elevatedButtonTheme:AppTheme.elevatedButtonThemeData ,
-         inputDecorationTheme: InputDecorationTheme(
+        elevatedButtonTheme: AppTheme.elevatedButtonThemeData,
+        inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10)
+            borderRadius: BorderRadius.circular(10),
           ),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFADD8E6))
+            borderSide: BorderSide(color: Color(0xFFADD8E6)),
           ),
-        )),
-       home: LoginPage(),
+        ),
+      ),
+      home: LoginPage(),
     );
-
-
-
-
   }
 }
 
@@ -58,44 +54,49 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    GoogleSignIn _googleSignIn = GoogleSignIn();
+  // Removed duplicate GoogleSignIn instance
 
   Future<void> _signInWithEmailAndPassword() async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
-      if (!context.mounted) return;
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
-    } on FirebaseAuthException catch (e) {
-      if (!context.mounted) return;
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-            title: Text('Error'), content: Text(e.message ?? 'An error occurred')),
-      );
+    if (_formKey.currentState!.validate()) {
+      try {
+        await _auth.signInWithEmailAndPassword(
+            email: _emailController.text, password: _passwordController.text);
+        if (!context.mounted) return;
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      } on FirebaseAuthException catch (e) {
+        if (!context.mounted) return;
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+              title: Text('Error'), content: Text(e.message ?? 'An error occurred')),
+        );
+      }
     }
   }
 
   Future<void> _createUserWithEmailAndPassword() async {
-    try {
-     await _auth.createUserWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
-    } on FirebaseAuthException catch (e) {
-      if (!context.mounted) return;
-      showDialog(
-        context: context,
-        builder: (context) =>
-            AlertDialog(title: Text('Error'), content: Text(e.message ?? 'An error occurred')),
-    );
+    if (_formKey.currentState!.validate()) {
+      try {
+        await _auth.createUserWithEmailAndPassword(
+            email: _emailController.text, password: _passwordController.text);
+      } on FirebaseAuthException catch (e) {
+        if (!context.mounted) return;
+        showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialog(title: Text('Error'), content: Text(e.message ?? 'An error occurred')),
+        );
+      }
     }
   }
 
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-       final GoogleSignInAuthentication googleAuth =
-          await googleUser!.authentication;
+      if (googleUser == null) return; // User cancelled sign-in
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -106,10 +107,16 @@ class _LoginPageState extends State<LoginPage> {
       });
     } catch (e) {
       if (!context.mounted) return;
+      String errorMessage = 'An error occurred during Google Sign-in.';
+      if (e is FirebaseAuthException) {
+        errorMessage = e.message ?? errorMessage;
+      } else if (e is GoogleSignInCanceledException) {
+        errorMessage = 'Google Sign-in was cancelled by the user.';
+      }
       showDialog(
         context: context,
         builder: (context) =>
-            AlertDialog(title: Text('Error'), content: Text(e.toString()))
+            AlertDialog(title: Text('Error'), content: Text(errorMessage)),
       );
     }
   }
@@ -126,7 +133,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
           title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
-
           backgroundColor: AppTheme.lightBlue),
       body: Form(
         key: _formKey,
@@ -153,8 +159,8 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: TextFormField(
                   controller: _passwordController,
-                 decoration: const InputDecoration(labelText: 'Password'),
-                    obscureText: true,
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty || value.length < 6) {
                       return 'Password must be at least 6 characters';
@@ -174,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                 onPressed: _signInWithGoogle,
+                onPressed: _signInWithGoogle,
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -197,33 +203,37 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
           backgroundColor: AppTheme.lightBlue,
-          foregroundColor: AppTheme.darkGrey, title: Image.asset(
+          foregroundColor: AppTheme.darkGrey,
+          title: Image.asset(
             "assets/images/logo.jpg",
             width: 230,
-            height: 50,)),
+            height: 50,
+          )),
       drawer: Drawer(
         backgroundColor: AppTheme.lightGrey,
         child: ListView(
-            padding: EdgeInsets.zero, children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(color: AppTheme.lightBlue),
-            child: Text('My Profile',
-                style: TextStyle(color: AppTheme.darkGrey, fontSize: 24)),
-          ),
-          ListTile(
-              leading: Icon(Icons.person), title: Text('My Profile'), onTap: () {}),
-          ListTile(leading: Icon(Icons.send), title: Text('Missions Given'), onTap: () {}),
-          ListTile(leading: Icon(Icons.reply), title: Text('Missions Taken'), onTap: () {}),
-          ListTile(leading: Icon(Icons.calendar_today), title: Text('Calendar'),
-              onTap: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => CalendarPage()));
-          }),
-        ]),
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(color: AppTheme.lightBlue),
+              child: Text('My Profile',
+                  style: TextStyle(color: AppTheme.darkGrey, fontSize: 24)),
+            ),
+            ListTile(leading: Icon(Icons.person), title: Text('My Profile'), onTap: () {}),
+            ListTile(leading: Icon(Icons.send), title: Text('Missions Given'), onTap: () {}),
+            ListTile(leading: Icon(Icons.reply), title: Text('Missions Taken'), onTap: () {}),
+            ListTile(
+                leading: Icon(Icons.calendar_today),
+                title: Text('Calendar'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CalendarPage()));
+                }),
+          ],
+        ),
       ),
       backgroundColor: AppTheme.lightGrey,
       body: Padding(
@@ -231,17 +241,17 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const Text('Welcome!', style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.lightBlue),
+            const Text('Welcome!',
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.lightBlue),
                 textAlign: TextAlign.center),
             const SizedBox(height: 20),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(
-                          builder: (context) => HowItWorksPage()));
+                      MaterialPageRoute(builder: (context) => HowItWorksPage()));
                 },
                 child: const Text('How Does It Work?')),
             const SizedBox(height: 10),
@@ -252,15 +262,20 @@ class HomePage extends StatelessWidget {
                 },
                 child: const Text('Send On A Mission')),
             const SizedBox(height: 10),
-
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ChooseMissionPage()));
+                },
+                child: const Text('Choose Your Mission')),
             const SizedBox(height: 10),
-            ElevatedButton(onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseMissionPage()));
-            }, child: const Text('Choose Your Mission')),
-            const SizedBox(height: 10),
-            ElevatedButton(onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ContactPage()));
-            }, child: const Text('Contact')),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ContactPage()));
+                },
+                child: const Text('Contact')),
+            // You can add more widgets here to display user-specific information or quick actions.
           ],
         ),
       ),
@@ -272,12 +287,17 @@ class CalendarPage extends StatelessWidget {
   const CalendarPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Image.asset("assets/images/logo.jpg", width: 230, height: 50), backgroundColor: AppTheme.lightBlue),
-       backgroundColor: AppTheme.lightGrey,
-        body: TableCalendar(focusedDay: DateTime.now(), firstDay: DateTime.utc(2010, 10, 16), lastDay: DateTime.utc(2030, 3, 14)));
- }
+        appBar: AppBar(
+            title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
+            backgroundColor: AppTheme.lightBlue),
+        backgroundColor: AppTheme.lightGrey,
+        body: TableCalendar(
+            focusedDay: DateTime.now(),
+            firstDay: DateTime.utc(2010, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14)));
+  }
 }
 
 class HowItWorksPage extends StatelessWidget {
@@ -286,23 +306,31 @@ class HowItWorksPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
-          backgroundColor: AppTheme.lightBlue),
-      body: const Padding(padding: EdgeInsets.all(16.0), child: Text('Explain the process of how the app works here.'))
-    );
+        appBar: AppBar(
+            title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
+            backgroundColor: AppTheme.lightBlue),
+        body: const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('Explain the process of how the app works here.')));
   }
 }
 
 class SendOnMissionPage extends StatefulWidget {
   const SendOnMissionPage({Key? key}) : super(key: key);
 
-
   @override
   State<SendOnMissionPage> createState() => _SendOnMissionPageState();
 }
 
-class _SendOnMissionPageState extends State<SendOnMissionPage> { @override
+class _SendOnMissionPageState extends State<SendOnMissionPage> {
+  String? _selectedCategory;
+  DateTime _selectedDate = DateTime.now();
+  final TextEditingController _dueDateController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _criteriaController = TextEditingController();
+
+  @override
   void initState() {
     super.initState();
     _dueDateController.text = DateFormat('yyyy-MM-dd').format(_selectedDate);
@@ -311,64 +339,90 @@ class _SendOnMissionPageState extends State<SendOnMissionPage> { @override
   @override
   void dispose() {
     _dueDateController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
+    _criteriaController.dispose();
     super.dispose();
   }
-  String? _selectedCategory;
-  DateTime _selectedDate = DateTime.now();
-    final TextEditingController _dueDateController = TextEditingController();
-    @override
+
+  @override
   Widget build(BuildContext context) {
-     return Scaffold(
-       appBar: AppBar(title: Image.asset("assets/images/logo.jpg", width: 230, height: 50), backgroundColor: AppTheme.lightBlue),
+    return Scaffold(
+      appBar: AppBar(
+          title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
+          backgroundColor: AppTheme.lightBlue),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
               DropdownButtonFormField<String>(
-                items: ['Errands', 'Transportation/Delivery', 'Food', 'Social Interactions', 'Special Missions', 'Repairs'].map((String value) {
+                items: [
+                  'Errands',
+                  'Transportation/Delivery',
+                  'Food',
+                  'Social Interactions',
+                  'Special Missions',
+                  'Repairs'
+                ].map((String value) {
                   return DropdownMenuItem<String>(value: value, child: Text(value));
                 }).toList(),
                 onChanged: (String? value) {
                   setState(() {
                     _selectedCategory = value;
-                  });},
+                  });
+                },
                 decoration: InputDecoration(labelText: 'Mission Category'),
-                ),
-               SizedBox(height: 10),
-              TextField(decoration: InputDecoration(labelText: 'Description')),
-              const SizedBox(height: 10),
-              TextField(decoration: InputDecoration(labelText: 'Price (if applicable)')),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(labelText: 'Description')),
               const SizedBox(height: 10),
               TextField(
-                  decoration: InputDecoration(labelText: 'Due Date'),
-                  onTap: () async {
-                    // Show date picker on tap
-                    final DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2100),
-                    );
-                    if (pickedDate != null && pickedDate != _selectedDate) {
-                        _selectedDate = pickedDate;
+                  controller: _priceController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(labelText: 'Price (if applicable)')),
+              const SizedBox(height: 10),
+              TextField(
+                decoration: InputDecoration(labelText: 'Due Date'),
+                onTap: () async {
+                  final DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: _selectedDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2100),
+                  );
+                  if (pickedDate != null && pickedDate != _selectedDate) {
+                    setState(() {
+                      _selectedDate = pickedDate;
                       _dueDateController.text =
-                           DateFormat('yyyy-MM-dd').format(_selectedDate);
-                    }
-                  },
-                   controller: _dueDateController,
-                ),
-               SizedBox(height: 10),
-              TextField(decoration: InputDecoration(labelText: 'Criteria')),
-               SizedBox(height: 20),
-              ElevatedButton(onPressed: () {}, child: const Text('Submit Mission')),
+                          DateFormat('yyyy-MM-dd').format(_selectedDate);
+                    });
+                  }
+                },
+                controller: _dueDateController,
+              ),
+              SizedBox(height: 10),
+              TextField(
+                  controller: _criteriaController,
+                  decoration: InputDecoration(labelText: 'Criteria')),
+              SizedBox(height: 20),
+              ElevatedButton(onPressed: () {
+                // Implement logic to submit the mission data
+                print('Category: $_selectedCategory');
+                print('Description: ${_descriptionController.text}');
+                print('Price: ${_priceController.text}');
+                print('Due Date: ${_dueDateController.text}');
+                print('Criteria: ${_criteriaController.text}');
+                // You would typically send this data to a backend service here.
+              }, child: const Text('Submit Mission')),
             ],
           ),
         ),
       ),
     );
   }
-
 }
 
 class ChooseMissionPage extends StatelessWidget {
@@ -378,8 +432,10 @@ class ChooseMissionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Image.asset("assets/images/logo.jpg", width: 230, height: 50), backgroundColor: AppTheme.lightBlue),
-        body: const Padding(padding: EdgeInsets.all(16.0), child: Text('List of available missions.')));
+            title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
+            backgroundColor: AppTheme.lightBlue),
+        body: const Padding(
+            padding: EdgeInsets.all(16.0), child: Text('List of available missions.')));
   }
 }
 
@@ -392,6 +448,8 @@ class ContactPage extends StatelessWidget {
         appBar: AppBar(
             title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
             backgroundColor: AppTheme.lightBlue),
-        body: const Padding(padding: EdgeInsets.all(16.0), child: Text('Contact information.')));
+        body: const Padding(
+            padding: EdgeInsets.all(16.0), child: Text('Contact information.')));
   }
 }
+```
