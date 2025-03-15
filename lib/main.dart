@@ -278,8 +278,22 @@ class HowItWorksScreen extends StatelessWidget {
   }
 }
 
-class SendOnMissionScreen extends StatelessWidget {
+class SendOnMissionScreen extends StatefulWidget {
   const SendOnMissionScreen({super.key});
+
+  @override
+  State<SendOnMissionScreen> createState() => _SendOnMissionScreenState();
+}
+
+class _SendOnMissionScreenState extends State<SendOnMissionScreen> {
+  DateTime? _selectedDate;
+  final TextEditingController _dateController = TextEditingController();
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -327,22 +341,22 @@ class SendOnMissionScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            const TextField(
+             TextField(
+              controller: _dateController,
               decoration: InputDecoration(
                 labelText: 'Due Date (Optional)',
                 border: OutlineInputBorder(),
               ),
               readOnly: true, // Prevent manual editing
               onTap: () async {
-                // Implement date picker here
-                DateTime? selectedDate = await showDatePicker(
+                _selectedDate = await showDatePicker(
                   context: context,
                   initialDate: DateTime.now(),
                   firstDate: DateTime(2023),
                   lastDate: DateTime(2030),
                 );
-                if (selectedDate != null) {
-                  // Update the text field with the selected date
+                if (_selectedDate != null) {
+                  _dateController.text = _selectedDate.toString().split(' ')[0];
                 }
               },
             ),
