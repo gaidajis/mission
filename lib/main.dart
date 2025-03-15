@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:intl/intl.dart';
-import 'theme.dart';
+import 'package:firebase_core/firebase_core.dart';// Add this line
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   runApp(MyApp());
 }
 
@@ -17,32 +15,48 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'The Mission!',
-      theme: ThemeData(
-        fontFamily: 'Pacifico',
-        primarySwatch: AppTheme.primarySwatch,
-        scaffoldBackgroundColor: AppTheme.lightGrey,
-        appBarTheme: AppBarTheme(
-          backgroundColor: AppTheme.lightBlue,
-          foregroundColor: AppTheme.darkGrey,
-        ),
-        elevatedButtonTheme: AppTheme.elevatedButtonThemeData,
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+        title: 'The Mission!', //change theme parameter to ThemeData
+        
+        theme: ThemeData( //change theme parameter to ThemeData
+          fontFamily: 'Pacifico',
+        primarySwatch: MaterialColor(0xFFADD8E6, <int, Color>{
+          50: Color(0xFFE3F2FD),
+          100: Color(0xFFBBDEFB),
+          200: Color(0xFF90CAF9),
+          300: Color(0xFF64B5F6),
+          400: Color(0xFF42A5F5),
+          500: Color(0xFFADD8E6),
+          600: Color(0xFF1E88E5),
+          700: Color(0xFF1976D2),
+          800: Color(0xFF1565C0),
+          900: Color(0xFF0D47A1),
+        }),
+          scaffoldBackgroundColor: Colors.grey[100],
+          appBarTheme: AppBarTheme(
+            backgroundColor: Color(0xFFADD8E6),
+            foregroundColor: Colors.black87,
           ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFADD8E6)),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFADD8E6),
+              foregroundColor: Colors.black87,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              padding: EdgeInsets.zero,
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFFADD8E6))),
           ),
         ),
-      ),
-      home: LoginPage(),
+        home: LoginPage(),
+
     );
   }
 }
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -53,71 +67,42 @@ class _LoginPageState extends State<LoginPage> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  // Removed duplicate GoogleSignIn instance
-
+   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   Future<void> _signInWithEmailAndPassword() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await _auth.signInWithEmailAndPassword(
-            email: _emailController.text, password: _passwordController.text);
-        if (!context.mounted) return;
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
-      } on FirebaseAuthException catch (e) {
-        if (!context.mounted) return;
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-              title: Text('Error'), content: Text(e.message ?? 'An error occurred')),
-        );
-      }
+    try {
+      await _auth.signInWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+    } catch (e) {
+      // Handle error
+      if (!context.mounted) return; showDialog(context: context, builder: (context) => AlertDialog(title: Text('Error'), content: Text(e.toString()),));
     }
   }
 
   Future<void> _createUserWithEmailAndPassword() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await _auth.createUserWithEmailAndPassword(
-            email: _emailController.text, password: _passwordController.text);
-      } on FirebaseAuthException catch (e) {
-        if (!context.mounted) return;
-        showDialog(
-          context: context,
-          builder: (context) =>
-              AlertDialog(title: Text('Error'), content: Text(e.message ?? 'An error occurred')),
-        );
-      }
+    try {
+      await _auth.createUserWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+    } catch (e) {
+      // Handle error
+      if (!context.mounted) return; showDialog(context: context, builder: (context) => AlertDialog(title: Text('Error'), content: Text(e.toString()),));
     }
   }
 
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return; // User cancelled sign-in
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      await _auth.signInWithCredential(credential).then((value) {
-        if (!context.mounted) return;
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-      });
+      await _auth.signInWithCredential(credential);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
     } catch (e) {
-      if (!context.mounted) return;
-      String errorMessage = 'An error occurred during Google Sign-in.';
-      if (e is FirebaseAuthException) {
-        errorMessage = e.message ?? errorMessage;
-      } else if (e is GoogleSignInCanceledException) {
-        errorMessage = 'Google Sign-in was cancelled by the user.';
-      }
-      showDialog(
-        context: context,
-        builder: (context) =>
-            AlertDialog(title: Text('Error'), content: Text(errorMessage)),
-      );
+      // Handle error
+      if (!context.mounted) return; showDialog(context: context, builder: (context) => AlertDialog(title: Text('Error'), content: Text(e.toString()),));
     }
   }
 
@@ -131,67 +116,51 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
-          backgroundColor: AppTheme.lightBlue),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty || !value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
+      key: formKey,
+      appBar: AppBar(title: Image.asset("web/logo/logo.jpg", width: 230, height: 50), backgroundColor: Color(0xFFADD8E6)),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
-                    return null;
-                  },
-                ),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              ElevatedButton(
-                onPressed: _signInWithEmailAndPassword,
-                child: const Text('Login'),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _signInWithEmailAndPassword,
+              child: Text('Login'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _createUserWithEmailAndPassword,
+              child: Text('Create an Account'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _signInWithGoogle,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [Icon(Icons.email), SizedBox(width: 10,),Text('Sign in with Google'),],
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _createUserWithEmailAndPassword,
-                child: const Text('Create an Account'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _signInWithGoogle,
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.email),
-                    SizedBox(width: 10),
-                    Text('Sign in with Google'),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
@@ -199,83 +168,61 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    const lightBlue = Color(0xFFADD8E6);
+    const darkGrey = Colors.black87;
+    const lightGrey = Colors.grey;
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: AppTheme.lightBlue,
-          foregroundColor: AppTheme.darkGrey,
-          title: Image.asset(
-            "assets/images/logo.jpg",
-            width: 230,
+      appBar: AppBar(backgroundColor: lightBlue,
+        foregroundColor: darkGrey,
+          title:  Image.asset("web/logo/logo.jpg",
+             width: 230,
+
             height: 50,
           )),
       drawer: Drawer(
-        backgroundColor: AppTheme.lightGrey,
+        backgroundColor: lightGrey[100],
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(color: AppTheme.lightBlue),
-              child: Text('My Profile',
-                  style: TextStyle(color: AppTheme.darkGrey, fontSize: 24)),
+              decoration: BoxDecoration(color: lightBlue),
+              child: Text(
+                  'My Profile',
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontSize: 24)
+                  ),
             ),
+            // ListTile(leading: Icon(Icons.person, color: darkGrey), title: Text('My Profile'), onTap: () {}),
             ListTile(leading: Icon(Icons.person), title: Text('My Profile'), onTap: () {}),
             ListTile(leading: Icon(Icons.send), title: Text('Missions Given'), onTap: () {}),
             ListTile(leading: Icon(Icons.reply), title: Text('Missions Taken'), onTap: () {}),
-            ListTile(
-                leading: Icon(Icons.calendar_today),
-                title: Text('Calendar'),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => CalendarPage()));
-                }),
+            ListTile(leading: Icon(Icons.calendar_today), title: Text('Calendar'), onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => CalendarPage()));}),
           ],
         ),
       ),
-      backgroundColor: AppTheme.lightGrey,
+      backgroundColor: lightGrey[100],
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             const Text('Welcome!',
                 style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.lightBlue),
+                    fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFFADD8E6)),
                 textAlign: TextAlign.center),
-            const SizedBox(height: 20),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HowItWorksPage()));
-                },
-                child: const Text('How Does It Work?')),
-            const SizedBox(height: 10),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SendOnMissionPage()));
-                },
-                child: const Text('Send On A Mission')),
-            const SizedBox(height: 10),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ChooseMissionPage()));
-                },
-                child: const Text('Choose Your Mission')),
-            const SizedBox(height: 10),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ContactPage()));
-                },
-                child: const Text('Contact')),
-            // You can add more widgets here to display user-specific information or quick actions.
+            SizedBox(height: 20),
+            ElevatedButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => HowItWorksPage()));}, child: Text('How Does It Work?')),
+            SizedBox(height: 10),
+            ElevatedButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => SendOnMissionPage()));}, child: Text('Send On A Mission')),
+            SizedBox(height: 10),
+            ElevatedButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseMissionPage()));}, child: Text('Choose Your Mission')),
+            SizedBox(height: 10),
+            ElevatedButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => ContactPage()));}, child: Text('Contact')),
           ],
         ),
       ),
@@ -283,140 +230,60 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class CalendarPage extends StatelessWidget {
-  const CalendarPage({Key? key}) : super(key: key);
+class CalendarPage extends StatelessWidget{
+  const CalendarPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
-            backgroundColor: AppTheme.lightBlue),
-        backgroundColor: AppTheme.lightGrey,
-        body: TableCalendar(
-            focusedDay: DateTime.now(),
-            firstDay: DateTime.utc(2010, 10, 16),
-            lastDay: DateTime.utc(2030, 3, 14)));
-  }
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar( backgroundColor: Color(0xFFADD8E6),
+        middle: const Text("Calendar"),
+      ),
+        child: Scaffold(
+          appBar: AppBar(title: Image.asset("web/icons/Icon-192.png", width: 50, height: 50), backgroundColor: Color(0xFFADD8E6)),
+          body: TableCalendar(focusedDay: DateTime.now(), firstDay: DateTime.utc(2010, 10, 16), lastDay: DateTime.utc(2030, 3, 14))),
+    );
+ }
 }
 
 class HowItWorksPage extends StatelessWidget {
-  const HowItWorksPage({Key? key}) : super(key: key);
+  const HowItWorksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
-            backgroundColor: AppTheme.lightBlue),
-        body: const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text('Explain the process of how the app works here.')));
+    return Scaffold(appBar: AppBar(title: Image.asset("web/logo/logo.jpg", width: 230, height: 50), backgroundColor: Color(0xFFADD8E6)), body: Padding(padding: const EdgeInsets.all(16.0), child: Text('Explain the process of how the app works here.')));
   }
 }
 
-class SendOnMissionPage extends StatefulWidget {
-  const SendOnMissionPage({Key? key}) : super(key: key);
+class SendOnMissionPage extends StatelessWidget {
+  const SendOnMissionPage({super.key});
 
-  @override
-  State<SendOnMissionPage> createState() => _SendOnMissionPageState();
-}
-
-class _SendOnMissionPageState extends State<SendOnMissionPage> {
-  String? _selectedCategory;
-  DateTime _selectedDate = DateTime.now();
-  final TextEditingController _dueDateController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _criteriaController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _dueDateController.text = DateFormat('yyyy-MM-dd').format(_selectedDate);
-  }
-
-  @override
-  void dispose() {
-    _dueDateController.dispose();
-    _descriptionController.dispose();
-    _priceController.dispose();
-    _criteriaController.dispose();
-    super.dispose();
-  }
-
-  @override
+   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
-          backgroundColor: AppTheme.lightBlue),
+     return Scaffold(
+      appBar: AppBar(title: Image.asset("web/icons/logo.jpg", width: 230, height: 50), backgroundColor: Color(0xFFADD8E6)),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
               DropdownButtonFormField<String>(
-                items: [
-                  'Errands',
-                  'Transportation/Delivery',
-                  'Food',
-                  'Social Interactions',
-                  'Special Missions',
-                  'Repairs'
-                ].map((String value) {
+                items: ['Errands', 'Transportation/Delivery', 'Food', 'Social Interactions', 'Special Missions', 'Repairs'].map((String value) {
                   return DropdownMenuItem<String>(value: value, child: Text(value));
                 }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
+                onChanged: (_) {},
                 decoration: InputDecoration(labelText: 'Mission Category'),
               ),
               SizedBox(height: 10),
-              TextField(
-                  controller: _descriptionController,
-                  decoration: InputDecoration(labelText: 'Description')),
-              const SizedBox(height: 10),
-              TextField(
-                  controller: _priceController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(labelText: 'Price (if applicable)')),
-              const SizedBox(height: 10),
-              TextField(
-                decoration: InputDecoration(labelText: 'Due Date'),
-                onTap: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDate,
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2100),
-                  );
-                  if (pickedDate != null && pickedDate != _selectedDate) {
-                    setState(() {
-                      _selectedDate = pickedDate;
-                      _dueDateController.text =
-                          DateFormat('yyyy-MM-dd').format(_selectedDate);
-                    });
-                  }
-                },
-                controller: _dueDateController,
-              ),
+              TextField(decoration: InputDecoration(labelText: 'Description')),
               SizedBox(height: 10),
-              TextField(
-                  controller: _criteriaController,
-                  decoration: InputDecoration(labelText: 'Criteria')),
+              TextField(decoration: InputDecoration(labelText: 'Price (if applicable)')),
+              SizedBox(height: 10),
+              TextField(decoration: InputDecoration(labelText: 'Due Date'), onTap: (){},),
+              SizedBox(height: 10),
+              TextField(decoration: InputDecoration(labelText: 'Criteria')),
               SizedBox(height: 20),
-              ElevatedButton(onPressed: () {
-                // Implement logic to submit the mission data
-                print('Category: $_selectedCategory');
-                print('Description: ${_descriptionController.text}');
-                print('Price: ${_priceController.text}');
-                print('Due Date: ${_dueDateController.text}');
-                print('Criteria: ${_criteriaController.text}');
-                // You would typically send this data to a backend service here.
-              }, child: const Text('Submit Mission')),
+              ElevatedButton(onPressed: () {}, child: Text('Submit Mission')),
             ],
           ),
         ),
@@ -426,30 +293,19 @@ class _SendOnMissionPageState extends State<SendOnMissionPage> {
 }
 
 class ChooseMissionPage extends StatelessWidget {
-  const ChooseMissionPage({Key? key}) : super(key: key);
+  const ChooseMissionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
-            backgroundColor: AppTheme.lightBlue),
-        body: const Padding(
-            padding: EdgeInsets.all(16.0), child: Text('List of available missions.')));
+    return Scaffold(appBar: AppBar(title: Image.asset("web/logo/logo.jpg", width: 230, height: 50), backgroundColor: Color(0xFFADD8E6)), body: Padding(padding: const EdgeInsets.all(16.0), child: Text('List of available missions.')));
   }
 }
 
 class ContactPage extends StatelessWidget {
-  const ContactPage({Key? key}) : super(key: key);
+  const ContactPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: Image.asset("assets/images/logo.jpg", width: 230, height: 50),
-            backgroundColor: AppTheme.lightBlue),
-        body: const Padding(
-            padding: EdgeInsets.all(16.0), child: Text('Contact information.')));
+  Widget build(BuildContext context) {    
+    return Scaffold(appBar: AppBar(title: Image.asset("web/logo/logo.jpg", width: 230, height: 50), backgroundColor: Color(0xFFADD8E6)), body: Padding(padding: const EdgeInsets.all(16.0), child: Text('Contact information.')));
   }
 }
-```
