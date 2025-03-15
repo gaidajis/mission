@@ -31,17 +31,10 @@ dependencies:
   flutter:
     sdk: flutter
   table_calendar: ^3.0.9
-<<<<<<< HEAD
   firebase_auth: ^5.5.1
   google_sign_in: ^6.2.1
   firebase_core: ^3.12.1
   intl: ^0.20.2
-=======
-  firebase_auth: ^4.16.0
-  google_sign_in: ^6.2.1
-  firebase_core: ^2.24.2
-  intl: ^0.19.0
->>>>>>> 5287d2a (idx promissing)
 
 
 
