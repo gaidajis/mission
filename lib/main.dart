@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 final Color primaryColor = const Color(0xFF2962FF);
 
@@ -57,7 +58,13 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: const Color(0xFFF5F5F5), // Light background for modern look
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: const Text('The Mission', style: TextStyle(color: Colors.white)),
+        title: Center(
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: 50,
+          ),
+        ),
+        titleTextStyle: const TextStyle(fontFamily: 'Roboto', color: Colors.white),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
@@ -164,7 +171,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -232,14 +239,62 @@ class HowItWorksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('How It Works', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
-          const Text('This section will explain how the platform works. You can add details about the process of giving and accepting missions here.', style: TextStyle(fontSize: 16)),
+          const Text(
+            'The Mission is simple! Here’s how it works:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            '1. **Post a Mission:** Need something done? Just post a mission with a price and description.',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '2. **Get Applications:** Verified users will apply to your mission.',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '3. **Choose a Helper:** Review applications and choose the best person for the job.',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '4. **Mission Completed:** Once the mission is done, approve the completion and the helper gets paid.',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'For Helpers:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            '1. **Browse Missions:** Find missions that match your skills and interests.',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '2. **Apply:** Submit your application with your proposed price.',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '3. **Get Hired:** If the mission poster likes your application, you’ll get hired.',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '4. **Complete the Mission:** Finish the task as agreed and get paid!',
+            style: TextStyle(fontSize: 16),
+          ),
           // Add more detailed steps or information here
         ],
       ),
@@ -280,7 +335,11 @@ class SendOnMissionScreen extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       print('$category tapped');
-                      // Navigate to a screen for creating a mission in this category
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MissionDetailsScreen(category: category)),
+                      );
                     },
                     child: Center(
                       child: Text(
@@ -305,15 +364,29 @@ class ChooseMissionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Choose Your Mission', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
-          const Text('This section will allow users to browse and choose available missions.', style: TextStyle(fontSize: 16)),
-          // Implement mission listing here (e.g., using ListView.builder)
+          const Text(
+            'Browse available missions posted by other users. You can filter by category, location, and price.',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            '**Available Missions:**',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const Text('- Need someone to pick up groceries (Location: Downtown, Price: \$20)', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 8),
+          const Text('- Walk my dog for 30 minutes (Location: Parkside, Price: \$15)', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 8),
+          const Text('- Help with assembling furniture (Location: Suburbs, Price: \$30)', style: TextStyle(fontSize: 16)),
+          // Implement actual mission listing here (e.g., using ListView.builder fetching data)
         ],
       ),
     );
@@ -332,11 +405,19 @@ class ContactScreen extends StatelessWidget {
         children: <Widget>[
           Text('Contact Us', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
-          const Text('You can reach us at:', style: TextStyle(fontSize: 16)),
+          const Text('We are here to help! Feel free to reach out to us through the following methods:', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('**Email:**', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text('Email: contact@themissionapp.com', style: TextStyle(fontSize: 16)),
+          const Text('contact@themissionapp.com', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('**Phone:**', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text('Phone: +1 555-123-4567', style: TextStyle(fontSize: 16)),
+          const Text('+1 555-123-4567', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('**Address:**', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          const Text('123 Main Street, Anytown, USA', style: TextStyle(fontSize: 16)),
           // Add a contact form or other contact methods here
         ],
       ),
@@ -457,35 +538,75 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class MissionDetailsScreen extends StatelessWidget {
+class MissionDetailsScreen extends StatefulWidget {
   final String category;
 
   const MissionDetailsScreen({Key? key, required this.category}) : super(key: key);
 
   @override
+  State<MissionDetailsScreen> createState() => _MissionDetailsScreenState();
+}
+
+class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
+  final _priceController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _dueDateController = TextEditingController();
+  final _criteriaController = TextEditingController();
+
+  Future<void> _sendEmail() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'gaidajis@gmail.com',
+      queryParameters: {
+        'subject': 'New Mission: ${widget.category}',
+        'body': 'Category: ${widget.category}\n'
+            'Price: ${_priceController.text}\n'
+            'Description: ${_descriptionController.text}\n'
+            'Location: ${_locationController.text}\n'
+            'Due Date: ${_dueDateController.text}\n'
+            'Criteria: ${_criteriaController.text}',
+      },
+    );
+
+    if (await canLaunchUrlString(emailLaunchUri.toString())) {
+      await launchUrlString(emailLaunchUri.toString());
+      // TODO: Implement logic to save the mission details under the user's account
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mission details sent via email!')),
+      );
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not launch email app.')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New $category Mission', style: const TextStyle(color: Colors.white)),
+        title: Text('New ${widget.category} Mission', style: const TextStyle(color: Colors.white)),
         backgroundColor: primaryColor,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Create a new $category mission', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor)),
+            Text('Create a new ${widget.category} mission', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor)),
             const SizedBox(height: 16),
-            const TextField(decoration: InputDecoration(labelText: 'Price')),
+            TextField(controller: _priceController, decoration: const InputDecoration(labelText: 'Price')),
             const SizedBox(height: 8),
-            const TextField(decoration: InputDecoration(labelText: 'Description')),
+            TextField(controller: _descriptionController, maxLines: 3, decoration: const InputDecoration(labelText: 'Description')),
             const SizedBox(height: 8),
-            const TextField(decoration: InputDecoration(labelText: 'Location')),
+            TextField(controller: _locationController, decoration: const InputDecoration(labelText: 'Location')),
             const SizedBox(height: 8),
-            const TextField(decoration: InputDecoration(labelText: 'Due Date')),
+            TextField(controller: _dueDateController, decoration: const InputDecoration(labelText: 'Due Date')),
             const SizedBox(height: 8),
-            const TextField(decoration: InputDecoration(labelText: 'Criteria')),
+            TextField(controller: _criteriaController, maxLines: 2, decoration: const InputDecoration(labelText: 'Criteria')),
             const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -494,10 +615,7 @@ class MissionDetailsScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: () {
-                // Implement logic to send the mission
-                Navigator.pop(context); // Go back after sending
-              },
+              onPressed: _sendEmail,
               child: const Text('Send Mission', style: TextStyle(fontSize: 18)),
             ),
           ],
