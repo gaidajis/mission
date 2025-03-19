@@ -15,10 +15,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'The Mission App',
       theme: ThemeData(
-        primarySwatch: MaterialColor(primaryColor.value, const <int, Color>{
+         primarySwatch: const MaterialColor(0xFF2962FF, <int, Color>{
           50: Color(0xFFE3F2FD), 100: Color(0xFFBBDEFB), 200: Color(0xFF90CAF9), 300: Color(0xFF64B5F6), 400: Color(0xFF42A5F5), 500: Color(0xFF2962FF), 600: Color(0xFF1E88E5), 700: Color(0xFF1976D2), 800: Color(0xFF1565C0), 900: Color(0xFF0D47A1),
         }),
-        useMaterial3: true,
+         useMaterial3: true,
         fontFamily: 'Roboto',
       ),
       home: const MyHomePage(),
@@ -167,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +183,7 @@ class HomeScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withAlpha(51),
                   spreadRadius: 2,
                   blurRadius: 5,
                   offset: const Offset(0, 3),
@@ -334,7 +334,7 @@ class SendOnMissionScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   child: InkWell(
                     onTap: () {
-                      print('$category tapped');
+                      //print('$category tapped');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -442,7 +442,7 @@ class LoginScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withAlpha(51),
                   spreadRadius: 1,
                   blurRadius: 5,
                   offset: const Offset(0, 3),
@@ -541,7 +541,7 @@ class ProfileScreen extends StatelessWidget {
 class MissionDetailsScreen extends StatefulWidget {
   final String category;
 
-  const MissionDetailsScreen({Key? key, required this.category}) : super(key: key);
+  const MissionDetailsScreen({super.key, required this.category});
 
   @override
   State<MissionDetailsScreen> createState() => _MissionDetailsScreenState();
@@ -569,14 +569,17 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
       },
     );
 
-    if (await canLaunchUrlString(emailLaunchUri.toString())) {
+    final canLaunch = await canLaunchUrlString(emailLaunchUri.toString());
+    if (!mounted) return;
+    if (canLaunch) {
       await launchUrlString(emailLaunchUri.toString());
-      // TODO: Implement logic to save the mission details under the user's account
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Mission details sent via email!')),
       );
       Navigator.pop(context);
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not launch email app.')),
       );
