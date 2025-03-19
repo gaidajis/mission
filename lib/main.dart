@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+// Define the primary color globally for consistent theming
 final Color primaryColor = const Color(0xFF2962FF);
 
 void main() {
@@ -13,12 +14,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, // Hide debug banner
       title: 'The Mission App',
       theme: ThemeData(
-         primarySwatch: const MaterialColor(0xFF2962FF, <int, Color>{
+        primarySwatch: const MaterialColor(0xFF2962FF, <int, Color>{
           50: Color(0xFFE3F2FD), 100: Color(0xFFBBDEFB), 200: Color(0xFF90CAF9), 300: Color(0xFF64B5F6), 400: Color(0xFF42A5F5), 500: Color(0xFF2962FF), 600: Color(0xFF1E88E5), 700: Color(0xFF1976D2), 800: Color(0xFF1565C0), 900: Color(0xFF0D47A1),
         }),
-         useMaterial3: true,
+        useMaterial3: true,
         fontFamily: 'Roboto',
       ),
       home: const MyHomePage(),
@@ -55,13 +57,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), // Light background for modern look
+      backgroundColor:
+          const Color(0xFFF5F5F5), // Light background for modern look
       appBar: AppBar(
         backgroundColor: primaryColor,
         title: Center(
           child: Image.asset(
             'assets/images/logo.png',
             width: 50,
+            //fit: BoxFit.cover,
+            errorBuilder: (BuildContext context, Object exception,
+                StackTrace? stackTrace) {
+              return const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 50,
+              );
+            },
           ),
         ),
         titleTextStyle: const TextStyle(fontFamily: 'Roboto', color: Colors.white),
@@ -72,15 +84,19 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             Container(
-              padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 40.0), // Adjusted header padding
+              padding: const EdgeInsets.only(
+                  left: 16.0, bottom: 16.0, top: 40.0), // Adjusted header padding
               decoration: BoxDecoration(
                 color: primaryColor,
               ),
               child: const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Text(
-                  'The Mission',
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold), // More prominent title
+                  'The Mission APP',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold), // More prominent title
                 ),
               ),
             ),
@@ -88,7 +104,10 @@ class _MyHomePageState extends State<MyHomePage> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               leading: Icon(Icons.home, color: _selectedIndex == 0 ? primaryColor : Colors.grey[600]),
               title: Text('Home', style: TextStyle(color: _selectedIndex == 0 ? primaryColor : Colors.black87)),
-              selected: _selectedIndex == 0,
+              selected: _selectedIndex == 0, // Highlight the selected item
+              selectedTileColor:
+                  Colors.grey[200], // Color when item is selected
+
               onTap: () => _onItemTapped(0),
             ),
             const Divider(indent: 16.0, endIndent: 16.0),
@@ -145,7 +164,9 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
-          });
+          }); // Update the selected index
+        },
+        type: BottomNavigationBarType.fixed,
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -171,64 +192,129 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withAlpha(51),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Text(
-                  'About The Mission',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  "Qu’est-ce qu’est The Mission ?",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Une plateforme qui permet de donner des mandats en quelques minutes. Elle permet de mettre en contact des gens du monde entier. Elle donne du travail aux personnes rapidement. Il ne faut pas passer par un processus long est compliqué pour donner ou accepter un mandat. Toutes les personnes sur la plateforme sont vérifiées. Une meilleure garantie pour les usagers que les sites d’annonces.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 15),
-                const Text(
-                  "English:",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  "What is The Mission? It's a platform that allows you to give tasks in minutes. It connects people from all over the world. It provides work for people quickly. You don't need to go through a long and complicated process to give or accept a task. All people on the platform are verified. It's a better guarantee for users than classified ads websites.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
+    return Scaffold( // Using Scaffold for a basic page structure
+        appBar: AppBar(
+          backgroundColor: primaryColor,
+          title: Text(
+            'The Mission App',
+            style: TextStyle(
+              color: Colors.white, // Ensure text color is readable
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
+        ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start, // Align content to the start for better flow
+          children: <Widget>[
+            // Image Placeholder with rounded corners
+            Container(
+              width: double.infinity,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.grey[300], // Placeholder color
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Center(
+                child: Icon(Icons.image_outlined, size: 60, color: Colors.grey),
+              ),
+            ),
+            const SizedBox(height: 24), // Increased spacing
+            // Introduction Card
+            Container(
+              padding: const EdgeInsets.all(20), // Increased padding
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16), // More rounded corners
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3), // Softer shadow
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+                children: <Widget>[
+                  Text(
+                    'About The Mission',
+                    textAlign: TextAlign.left, // Align title to the left
+                    style: TextStyle(
+                      fontSize: 26, // Larger font size
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor, // Use secondary color
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    "What is The Mission? It's a platform that allows you to give tasks in minutes. It connects people from all over the world. It provides work for people quickly. You don't need to go through a long and complicated process to give or accept a task. All people on the platform are verified. It's a better guarantee for users than classified ads websites.",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 18, color: Colors.black87), // Slightly larger and darker text
+                  ), 
+                  
+                  const SizedBox(height: 20),
+                  Text(
+                    'Imagine the Possibilities',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Theme.of(context).primaryColor), // Use primary color with slightly lighter weight
+                  ),
+                  const SizedBox(height: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const <Widget>[
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6.0), // Add vertical padding for list items
+                        child: Text("• Need a hand with setting up your new TV? Or perhaps you need someone to pick up a gift while you are working?", style: TextStyle(fontSize: 16, color: Colors.black87)),
+                        
+                      ),
+                      
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6.0),
+                        child: Text("• You could get a personalized menu, or a list of activities, tailored to your family's preferences.", style: TextStyle(fontSize: 16, color: Colors.black87)),
+                        
+                      ),
+                      
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6.0),
+                        child: Text("• Or, how about finding someone to assist with pet care while you're away, or to walk your dog?", style: TextStyle(fontSize: 16, color: Colors.black87)),
+                       
+                      ),
+                      
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6.0),
+                        child: Text("• And, as you browse, you will find profiles with many skills and qualifications, along with ratings and mission history, all in one place.", style: TextStyle(fontSize: 16, color: Colors.black87)),
+                        
+                      ),
+                      
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Example of a button widget
+                  ElevatedButton(
+                    onPressed: () {
+                      // Add your action here
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      textStyle: const TextStyle(fontSize: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Explore Missions', style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24), // Add more spacing at the end
+          ],
+        ),
       ),
     );
   }
@@ -239,65 +325,133 @@ class HowItWorksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('How It Works', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
-          const SizedBox(height: 16),
-          const Text(
-            'The Mission is simple! Here’s how it works:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('How it works'), // Modern looking title
+          backgroundColor: Theme.of(context).primaryColor, // Use primary color
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+            // Introduction Text
+              Container(
+              padding: const EdgeInsets.all(20), // Increased padding
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(16), // More rounded corners
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3), // Softer shadow
+                                       spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+                children:  <Widget>[
+                  Text(
+                    'How It Works',
+                    textAlign: TextAlign.left, // Align title to the left
+                    style: TextStyle(
+                      fontSize: 26, // Larger font size
+                     fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary, // Use secondary color
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'The Mission is simple! Here’s how it works:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ])),
+              const SizedBox(height: 24),
+              _buildStepCard(
+                  context,
+                  'Post a Mission',
+                  'Need something done? Just post a mission with a price and description.',
+                  'assets/images/post.png'),
+              const SizedBox(height: 16),
+              _buildStepCard(
+                  context,
+                  'Get Applications',
+                  'Verified users will apply to your mission.',
+                  'assets/images/applications.png'),
+              const SizedBox(height: 16),
+              _buildStepCard(
+                  context,
+                  'Choose a Helper',
+                  'Review applications and choose the best person for the job.',
+                  'assets/images/choose.png'),
+              const SizedBox(height: 16),
+              _buildStepCard(
+                  context,
+                  'Mission Completed',
+                  'Once the mission is done, approve the completion and the helper gets paid.',
+                  'assets/images/completed.png'),
+              const SizedBox(height: 24),
+              Center(
+                  child: ElevatedButton(
+                onPressed: () {
+                  // Add your action here
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('Get Started Now',
+                    style: TextStyle(color: Colors.white)),
+              ),
+              )
+              
+            ],
           ),
-          const SizedBox(height: 10),
-          const Text(
-            '1. **Post a Mission:** Need something done? Just post a mission with a price and description.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '2. **Get Applications:** Verified users will apply to your mission.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '3. **Choose a Helper:** Review applications and choose the best person for the job.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '4. **Mission Completed:** Once the mission is done, approve the completion and the helper gets paid.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'For Helpers:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            '1. **Browse Missions:** Find missions that match your skills and interests.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '2. **Apply:** Submit your application with your proposed price.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '3. **Get Hired:** If the mission poster likes your application, you’ll get hired.',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '4. **Complete the Mission:** Finish the task as agreed and get paid!',
-            style: TextStyle(fontSize: 16),
-          ),
-          // Add more detailed steps or information here
         ],
+       ),
+        
       ),
+    )
+  }
+
+  Widget _buildStepCard(BuildContext context, String title, String description, String imagePath) {
+    return Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              // Image on the left
+              Image.asset(
+                imagePath,
+                width: 80,
+                height: 80,
+              ),
+              const SizedBox(width: 16),
+              // Text on the right
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Text(description, style: const TextStyle(fontSize: 16)),
+                  ],
+                ),
+              ),
+            
+             ],
+          ),
+        ),
     );
   }
 }
@@ -312,7 +466,9 @@ class SendOnMissionScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Send on Mission', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+          Text('Send on Mission',
+              style: TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
           Expanded(
             child: GridView.count(
@@ -331,7 +487,8 @@ class SendOnMissionScreen extends StatelessWidget {
               ].map((category) {
                 return Card(
                   elevation: 3,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                   child: InkWell(
                     onTap: () {
                       //print('$category tapped');
@@ -369,13 +526,17 @@ class ChooseMissionScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Choose Your Mission', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+          Text('Choose Your Mission',
+              style: TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
           const Text(
             'Browse available missions posted by other users. You can filter by category, location, and price.',
             style: TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
+          
+
           const Text(
             '**Available Missions:**',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -403,17 +564,31 @@ class ContactScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Contact Us', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+          Text('Contact Us',
+              style: TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
-          const Text('We are here to help! Feel free to reach out to us through the following methods:', style: TextStyle(fontSize: 16)),
+          const Text(
+              'We are here to help! Feel free to reach out to us through the following methods:',
+              style: TextStyle(fontSize: 16)),
           const SizedBox(height: 16),
-          const Text('**Email:**', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('**Email:**',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text('contact@themissionapp.com', style: TextStyle(fontSize: 16)),
+          const Text('contact@themissionapp.com',
+              style: TextStyle(fontSize: 16)),
           const SizedBox(height: 16),
-          const Text('**Phone:**', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('**Phone:**',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text('+1 555-123-4567', style: TextStyle(fontSize: 16)),
+          const Text('+1 555-123-4567',
+              style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('**Address:**',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          const Text('123 Main Street, Anytown, USA',
+              style: TextStyle(fontSize: 16)),
           const SizedBox(height: 16),
           const Text('**Address:**', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
@@ -443,8 +618,8 @@ class LoginScreen extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                       color: Colors.grey.withAlpha(51),
-                  spreadRadius: 1,
-                  blurRadius: 5,
+                   spreadRadius: 1,
+                  blurRadius: 5, 
                   offset: const Offset(0, 3),
                 ),
               ],
@@ -480,7 +655,8 @@ class LoginScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const ProfileScreen()), // Navigate to profile after login
-                    );
+                  );
+                    
                   },
                   child: const Text('Login', style: TextStyle(fontSize: 18)),
                 ),
@@ -500,13 +676,24 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile', style: TextStyle(color: Colors.white)),
-        backgroundColor: primaryColor,
+           backgroundColor: primaryColor,
+          title: Text(
+            'My Profile',
+            style: TextStyle(
+              color: Colors.white, // Ensure text color is readable
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+         mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          
+        
+        
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text('My Profile', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
@@ -590,16 +777,27 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New ${widget.category} Mission', style: const TextStyle(color: Colors.white)),
-        backgroundColor: primaryColor,
-        iconTheme: const IconThemeData(color: Colors.white),
+          backgroundColor: primaryColor,
+          title: Text(
+            'New ${widget.category} Mission',
+            style: TextStyle(
+              color: Colors.white, // Ensure text color is readable
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      
+      
+     
+
+        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Create a new ${widget.category} mission', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor)),
+            Text('Create a new ${widget.category} mission', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor)), // Use primary color
             const SizedBox(height: 16),
             TextField(controller: _priceController, decoration: const InputDecoration(labelText: 'Price')),
             const SizedBox(height: 8),
@@ -624,6 +822,6 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
           ],
         ),
       ),
-    );
+    )
   }
 }
