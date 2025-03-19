@@ -4,7 +4,15 @@ import 'package:url_launcher/url_launcher_string.dart';
 // Define the primary color globally for consistent theming
 final Color primaryColor = const Color(0xFF2962FF);
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Conditional Firebase initialization for IDX previews
+  const isPreview = bool.fromEnvironment('preview');
+  if (!isPreview) {
+    await Firebase.initializeApp();
+  }
+
   runApp(const MyApp());
 }
 
@@ -18,7 +26,10 @@ class MyApp extends StatelessWidget {
       title: 'The Mission App',
       theme: ThemeData(
         primarySwatch: const MaterialColor(0xFF2962FF, <int, Color>{
-          50: Color(0xFFE3F2FD), 100: Color(0xFFBBDEFB), 200: Color(0xFF90CAF9), 300: Color(0xFF64B5F6), 400: Color(0xFF42A5F5), 500: Color(0xFF2962FF), 600: Color(0xFF1E88E5), 700: Color(0xFF1976D2), 800: Color(0xFF1565C0), 900: Color(0xFF0D47A1),
+          50: Color(0xFFE3F2FD), 100: Color(0xFFBBDEFB), 200: Color(0xFF90CAF9), 
+          300: Color(0xFF64B5F6), 400: Color(0xFF42A5F5), 500: Color(0xFF2962FF), 
+          600: Color(0xFF1E88E5), 700: Color(0xFF1976D2), 800: Color(0xFF1565C0), 
+          900: Color(0xFF0D47A1),
         }),
         useMaterial3: true,
         fontFamily: 'Roboto',
@@ -51,23 +62,19 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
     });
-    Navigator.pop(context); // Close the drawer
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          const Color(0xFFF5F5F5), // Light background for modern look
+      backgroundColor: const Color(0xFFF5F5F5), // Light background for modern look
       appBar: AppBar(
         backgroundColor: primaryColor,
         title: Center(
           child: Image.asset(
             'assets/images/logo.png',
             width: 50,
-            //fit: BoxFit.cover,
-            errorBuilder: (BuildContext context, Object exception,
-                StackTrace? stackTrace) {
+            errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
               return const Icon(
                 Icons.error_outline,
                 color: Colors.red,
@@ -76,7 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
         ),
-        titleTextStyle: const TextStyle(fontFamily: 'Roboto', color: Colors.white),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
@@ -84,36 +90,28 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             Container(
-              padding: const EdgeInsets.only(
-                  left: 16.0, bottom: 16.0, top: 40.0), // Adjusted header padding
-              decoration: BoxDecoration(
-                color: primaryColor,
-              ),
+              padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 40.0),
+              decoration: BoxDecoration(color: primaryColor),
               child: const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Text(
                   'The Mission APP',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold), // More prominent title
+                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              leading: Icon(Icons.home, color: _selectedIndex == 0 ? primaryColor : Colors.grey[600]),
+              leading: Icon(Icons.home_outlined, color: _selectedIndex == 0 ? primaryColor : Colors.grey[600]),
               title: Text('Home', style: TextStyle(color: _selectedIndex == 0 ? primaryColor : Colors.black87)),
-              selected: _selectedIndex == 0, // Highlight the selected item
-              selectedTileColor:
-                  Colors.grey[200], // Color when item is selected
-
+              selected: _selectedIndex == 0,
+              selectedTileColor: Colors.grey[200],
               onTap: () => _onItemTapped(0),
             ),
             const Divider(indent: 16.0, endIndent: 16.0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              leading: Icon(Icons.info_outline, color: _selectedIndex == 1 ? primaryColor : Colors.grey[600]),
+              leading: Icon(Icons.info, color: _selectedIndex == 1 ? primaryColor : Colors.grey[600]),
               title: Text('How does it work', style: TextStyle(color: _selectedIndex == 1 ? primaryColor : Colors.black87)),
               selected: _selectedIndex == 1,
               onTap: () => _onItemTapped(1),
@@ -121,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              leading: Icon(Icons.send, color: _selectedIndex == 2 ? primaryColor : Colors.grey[600]),
+              leading: Icon(Icons.send_outlined, color: _selectedIndex == 2 ? primaryColor : Colors.grey[600]),
               title: Text('Send on Mission', style: TextStyle(color: _selectedIndex == 2 ? primaryColor : Colors.black87)),
               selected: _selectedIndex == 2,
               onTap: () => _onItemTapped(2),
@@ -129,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              leading: Icon(Icons.search, color: _selectedIndex == 3 ? primaryColor : Colors.grey[600]),
+              leading: Icon(Icons.search_outlined, color: _selectedIndex == 3 ? primaryColor : Colors.grey[600]),
               title: Text('Choose your mission', style: TextStyle(color: _selectedIndex == 3 ? primaryColor : Colors.black87)),
               selected: _selectedIndex == 3,
               onTap: () => _onItemTapped(3),
@@ -137,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              leading: Icon(Icons.phone, color: _selectedIndex == 4 ? primaryColor : Colors.grey[600]),
+              leading: Icon(Icons.phone_outlined, color: _selectedIndex == 4 ? primaryColor : Colors.grey[600]),
               title: Text('Contact', style: TextStyle(color: _selectedIndex == 4 ? primaryColor : Colors.black87)),
               selected: _selectedIndex == 4,
               onTap: () => _onItemTapped(4),
@@ -145,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              leading: Icon(Icons.account_circle, color: _selectedIndex == 5 ? primaryColor : Colors.grey[600]),
+              leading: Icon(Icons.account_circle_outlined, color: _selectedIndex == 5 ? primaryColor : Colors.grey[600]),
               title: Text('Login', style: TextStyle(color: _selectedIndex == 5 ? primaryColor : Colors.black87)),
               selected: _selectedIndex == 5,
               onTap: () => _onItemTapped(5),
@@ -164,25 +162,261 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
-          }); // Update the selected index
+          });
         },
         type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'How It Works'),
+          BottomNavigationBarItem(icon: Icon(Icons.send), label: 'Send Mission'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Choose Mission'),
+          BottomNavigationBarItem(icon: Icon(Icons.phone), label: 'Contact'),
+          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Login'),
+        ],
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
+// Constants for better readability and maintainability
+const Color kPrimaryColor = Color(0xFF2962FF);
+const Color kBackgroundColor = Color(0xFFF5F5F5);
+const double kDefaultPadding = 16.0;
+const double kLargePadding = 24.0;
+const double kCardElevation = 4.0;
+const double kRoundedBorderRadius = 12.0;
+const String kRobotoFontFamily = 'Roboto';
+const String kLogoImagePath = 'assets/images/logo.png';
+const double kLogoWidth = 50.0;
+
+void main() {
+  runApp(const TheMissionApp());
+}
+
+// The root of the application
+class TheMissionApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, // Hide debug banner
+      title: 'The Mission App',
+      theme: ThemeData(
+        // Define primary swatch with different shades
+        primarySwatch: const MaterialColor(
+          0xFF2962FF,
+          <int, Color>{
+            50: Color(0xFFE3F2FD),
+            100: Color(0xFFBBDEFB),
+            200: Color(0xFF90CAF9),
+            300: Color(0xFF64B5F6),
+            400: Color(0xFF42A5F5),
+            500: Color(0xFF2962FF),
+            600: Color(0xFF1E88E5),
+            700: Color(0xFF1976D2),
+            800: Color(0xFF1565C0),
+            900: Color(0xFF0D47A1),
+        }),
+        useMaterial3: true,
+        fontFamily: kRobotoFontFamily,
+      ),
+      home: const MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int selectedIndex = 0;
+
+  static final List<Widget> widgetOptions = <Widget>[
+    const HomeScreen(),
+    const HowItWorksScreen(),
+    const SendOnMissionScreen(),
+    const ChooseMissionScreen(),
+    const ContactScreen(),
+    const LoginScreen(), // Added LoginScreen
+  ];
+
+  void onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: kBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        title: Center(
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: 50,
+            //fit: BoxFit.cover,
+            errorBuilder: (BuildContext context, Object exception,
+                StackTrace? stackTrace) {
+              return const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 50,
+              );
+            },
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            // Header for Drawer
+            Container(
+              padding: const EdgeInsets.only(
+                  left: kDefaultPadding,
+                  bottom: kDefaultPadding,
+                  top: 40.0),
+              decoration: BoxDecoration(
+                color: kPrimaryColor,
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(kDefaultPadding),
+                child: Text(
+                  'The Mission APP',
+                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            // Menu Item Home
+            DrawerMenuItem(
+              icon: Icons.home_outlined,
+              title: 'Home',
+              index: 0,
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            const Divider(indent: kDefaultPadding, endIndent: kDefaultPadding),
+            // Menu Item How It Works
+            DrawerMenuItem(
+              icon: Icons.info,
+              title: 'How does it work',
+              index: 1,
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            const Divider(indent: kDefaultPadding, endIndent: kDefaultPadding),
+            // Menu Item Send On Mission
+            DrawerMenuItem(
+              icon: Icons.send_outlined,
+              title: 'Send on Mission',
+              index: 2,
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            const Divider(indent: kDefaultPadding, endIndent: kDefaultPadding),
+            // Menu Item Choose Your Mission
+            DrawerMenuItem(
+              icon: Icons.search_outlined,
+              title: 'Choose your mission',
+              index: 3,
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            const Divider(indent: kDefaultPadding, endIndent: kDefaultPadding),
+            // Menu Item Contact
+            DrawerMenuItem(
+              icon: Icons.phone_outlined,
+              title: 'Contact',
+              index: 4,
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            const Divider(indent: kDefaultPadding, endIndent: kDefaultPadding),
+            // Menu Item Login
+            DrawerMenuItem(
+              icon: Icons.account_circle_outlined,
+              title: 'Login',
+              index: 5,
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            const Divider(indent: kDefaultPadding, endIndent: kDefaultPadding),
+          ],
+        ),
+      ),
+      body: Center(
+        child: widgetOptions.elementAt(selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: kPrimaryColor,
+        unselectedItemColor: Colors.grey[600],
+        currentIndex: selectedIndex,
+        onTap: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
         },
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
+            icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.info_outline),
+            icon: Icon(Icons.info),
             label: 'How it works',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
+            icon: Icon(Icons.send),
+            label: 'Send on Mission',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Choose',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.phone),
+            label: 'Contact',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
             label: 'Login',
           ),
         ],
       ),
+    );
+  }
+}
+// Reusable widget for drawer menu items
+class DrawerMenuItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final int index;
+  final int selectedIndex;
+  final Function(int) onTap;
+
+  const DrawerMenuItem({super.key, required this.icon, required this.title, required this.index, required this.selectedIndex, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: kDefaultPadding, vertical: 8),
+      leading: Icon(icon, color: selectedIndex == index ? kPrimaryColor : Colors.grey[600]),
+      title: Text(title, style: TextStyle(color: selectedIndex == index ? kPrimaryColor : Colors.black87)),
+      selected: selectedIndex == index,
+      selectedTileColor: Colors.grey[200],
+      onTap: () => onTap(index),
     );
   }
 }
@@ -192,19 +426,18 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( // Using Scaffold for a basic page structure
+    return Scaffold(
         appBar: AppBar(
-          backgroundColor: primaryColor,
-          title: Text(
+          backgroundColor: kPrimaryColor,
+          title: const Text(
             'The Mission App',
             style: TextStyle(
-              color: Colors.white, // Ensure text color is readable
+              color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           
           mainAxisSize: MainAxisSize.min,
@@ -215,14 +448,14 @@ class HomeScreen extends StatelessWidget {
               width: double.infinity,
               height: 200,
               decoration: BoxDecoration(
-                color: Colors.grey[300], // Placeholder color
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(kRoundedBorderRadius),
               ),
               child: const Center(
                 child: Icon(Icons.image_outlined, size: 60, color: Colors.grey),
               ),
             ),
-            const SizedBox(height: 24), // Increased spacing
+            const SizedBox(height: kLargePadding),
             // Introduction Card
             Container(
               padding: const EdgeInsets.all(20), // Increased padding
@@ -231,7 +464,7 @@ class HomeScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16), // More rounded corners
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.3), // Softer shadow
+                    color: Colors.grey.withOpacity(0.3),
                     spreadRadius: 3,
                     blurRadius: 7,
                     offset: const Offset(0, 5),
@@ -239,7 +472,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     'About The Mission',
@@ -247,7 +480,7 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 26, // Larger font size
                       fontWeight: FontWeight.bold,
-                      color: primaryColor, // Use secondary color
+                      color: kPrimaryColor,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -265,7 +498,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,                   
                     children: const <Widget>[
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 6.0), // Add vertical padding for list items
@@ -301,7 +534,7 @@ class HomeScreen extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15), // Button Padding
                       textStyle: const TextStyle(fontSize: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -312,7 +545,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24), // Add more spacing at the end
+            const SizedBox(height: kLargePadding),
           ],
         ),
       ),
@@ -327,24 +560,24 @@ class HowItWorksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('How it works'), // Modern looking title
-          backgroundColor: Theme.of(context).primaryColor, // Use primary color
+          title: const Text('How it works'),
+          backgroundColor: Theme.of(context).primaryColor,
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
+          child: Column(           
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: const <Widget>[
             // Introduction Text
-              Container(
+              const Container(
               padding: const EdgeInsets.all(20), // Increased padding
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius:
-                    BorderRadius.circular(16), // More rounded corners
+                    BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.3), // Softer shadow
+                    color: Colors.grey.withOpacity(0.3),
                                        spreadRadius: 3,
                     blurRadius: 7,
                     offset: const Offset(0, 5),
@@ -352,7 +585,7 @@ class HowItWorksScreen extends StatelessWidget {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children:  <Widget>[
                   Text(
                     'How It Works',
@@ -360,7 +593,7 @@ class HowItWorksScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 26, // Larger font size
                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary, // Use secondary color
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -369,12 +602,15 @@ class HowItWorksScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ])),
-              const SizedBox(height: 24),
+              
+                const SizedBox(height: 12),
+                
+                const SizedBox(height: 24),
               _buildStepCard(
                   context,
                   'Post a Mission',
                   'Need something done? Just post a mission with a price and description.',
-                  'assets/images/post.png'),
+                  'assets/images/rocket.png'),
               const SizedBox(height: 16),
               _buildStepCard(
                   context,
@@ -395,7 +631,7 @@ class HowItWorksScreen extends StatelessWidget {
                   'assets/images/completed.png'),
               const SizedBox(height: 24),
               Center(
-                  child: ElevatedButton(
+                child: ElevatedButton(
                 onPressed: () {
                   // Add your action here
                 },
@@ -411,32 +647,53 @@ class HowItWorksScreen extends StatelessWidget {
                 child: const Text('Get Started Now',
                     style: TextStyle(color: Colors.white)),
               ),
+              ), 
+                const SizedBox(height: 24),
+              const Text('Give us your suggestions:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              TextField(
+                maxLines: 4,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter your suggestion here',
+                ),
+              ),
+                const SizedBox(height: kLargePadding),
+              Center(
+                child: ElevatedButton(
+                onPressed: () {
+                  // Add your action here
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('Send', style: TextStyle(color: Colors.white)),
+              )              
               )
-              
-            ],
+            ], // Children
           ),
-        ],
-       ),
         
       ),
-    )
+    );
   }
 
   Widget _buildStepCard(BuildContext context, String title, String description, String imagePath) {
     return Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: kCardElevation,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kRoundedBorderRadius)),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(kDefaultPadding),
           child: Row(
             children: [
-              // Image on the left
-              Image.asset(
                 imagePath,
                 width: 80,
                 height: 80,
               ),
-              const SizedBox(width: 16),
+               const SizedBox(width: 16),
               // Text on the right
               Expanded(
                 child: Column(
@@ -468,7 +725,7 @@ class SendOnMissionScreen extends StatelessWidget {
         children: <Widget>[
           Text('Send on Mission',
               style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+                  fontSize: 24, fontWeight: FontWeight.bold, color: kPrimaryColor)),
           const SizedBox(height: 16),
           Expanded(
             child: GridView.count(
@@ -487,8 +744,8 @@ class SendOnMissionScreen extends StatelessWidget {
               ].map((category) {
                 return Card(
                   elevation: 3,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+
                   child: InkWell(
                     onTap: () {
                       //print('$category tapped');
@@ -528,7 +785,7 @@ class ChooseMissionScreen extends StatelessWidget {
         children: <Widget>[
           Text('Choose Your Mission',
               style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+                  fontSize: 24, fontWeight: FontWeight.bold, color: kPrimaryColor)),
           const SizedBox(height: 16),
           const Text(
             'Browse available missions posted by other users. You can filter by category, location, and price.',
@@ -548,11 +805,10 @@ class ChooseMissionScreen extends StatelessWidget {
           const SizedBox(height: 8),
           const Text('- Help with assembling furniture (Location: Suburbs, Price: \$30)', style: TextStyle(fontSize: 16)),
           // Implement actual mission listing here (e.g., using ListView.builder fetching data)
-        ],
+                ],
       ),
     );
-  }
-}
+  }}
 
 class ContactScreen extends StatelessWidget {
   const ContactScreen({super.key});
@@ -566,7 +822,7 @@ class ContactScreen extends StatelessWidget {
         children: <Widget>[
           Text('Contact Us',
               style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+                  fontSize: 24, fontWeight: FontWeight.bold, color: kPrimaryColor)),
           const SizedBox(height: 16),
           const Text(
               'We are here to help! Feel free to reach out to us through the following methods:',
@@ -627,7 +883,7 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Text('Login', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: primaryColor)),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 const TextField(
                   decoration: InputDecoration(
                     labelText: 'Email',
@@ -647,10 +903,11 @@ class LoginScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kRoundedBorderRadius)),
                   ),
                   onPressed: () {
+
                     // Implement login logic
                     Navigator.push(
                       context,
@@ -676,7 +933,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-           backgroundColor: primaryColor,
+           backgroundColor: kPrimaryColor,
           title: Text(
             'My Profile',
             style: TextStyle(
@@ -688,15 +945,12 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-         mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          
-        
-        
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('My Profile', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+            Text('My Profile', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: kPrimaryColor)),
             const SizedBox(height: 16),
             const Text('Name: John Doe', style: TextStyle(fontSize: 16)),
             const SizedBox(height: 8),
@@ -719,6 +973,7 @@ class ProfileScreen extends StatelessWidget {
             const Text('Calendar functionality can be implemented here.', style: TextStyle(fontSize: 16)),
             // Consider using a calendar widget here
           ],
+        ),
         ),
       ),
     );
@@ -783,15 +1038,9 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
             style: TextStyle(
               color: Colors.white, // Ensure text color is readable
               fontWeight: FontWeight.bold,
-            ),
+            ), // Text Style
           ),
         ),
-      
-      
-     
-
-        
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -822,6 +1071,6 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
           ],
         ),
       ),
-    )
+    );
   }
 }
