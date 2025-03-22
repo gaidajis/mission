@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
 
 final Color primaryColor = const Color(0xFF2962FF);
 
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'The Mission App',
+      title: 'The Mission',
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFF2962FF, <int, Color>{
           50: const Color(0xFFE3F2FD),
@@ -29,8 +30,8 @@ class MyApp extends StatelessWidget {
           900: const Color(0xFF0D47A1),
         }),
         useMaterial3: true,
-        fontFamily: 'Roboto',
-        brightness: Brightness.dark, // Dark theme
+        fontFamily: GoogleFonts.merriweather().fontFamily, // Elegant font
+        brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor, brightness: Brightness.dark),
       ),
       home: const MainScreen(),
@@ -77,22 +78,23 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: const Text(
-          'The Mission App',
-          style: TextStyle(fontFamily: 'Roboto', color: Colors.white),
+        title: Text(
+          'The Mission',
+          style: GoogleFonts.merriweather(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              padding: EdgeInsets.only(left: 16.0, bottom: 16.0, top: 40.0),
+            DrawerHeader(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 40.0),
+              decoration: BoxDecoration(color: primaryColor),
               child: Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
-                  'The Mission APP',
-                  style: TextStyle(
+                  'The Mission',
+                  style: GoogleFonts.merriweather(
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -192,9 +194,9 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: const Text(
+        title: Text(
           'Home',
-          style: TextStyle(
+          style: GoogleFonts.merriweather(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -205,17 +207,6 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.grey[800],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Center(
-                child: Icon(Icons.image_outlined, size: 40, color: Colors.grey),
-              ),
-            ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
@@ -481,7 +472,7 @@ class SendOnMissionScreen extends StatelessWidget {
                 );
               }).toList(),
             ),
-          )
+            )
         ],
       ),
     );
@@ -713,7 +704,7 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Mission details sent via email!')),
-      );
+        );
       Navigator.pop(context);
     } else {
       if (!mounted) return;
