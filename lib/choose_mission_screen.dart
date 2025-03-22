@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class Mission {
   final String name;
   final String location;
@@ -9,13 +8,12 @@ class Mission {
 }
 
 class ChooseMissionScreen extends StatefulWidget {
-  const ChooseMissionScreen({Key? key}) : super(key: key);
-
+  const ChooseMissionScreen({super.key});
   @override
-  _ChooseMissionScreenState createState() => _ChooseMissionScreenState();
+  ChooseMissionScreenState createState() => ChooseMissionScreenState();
 }
 
-class _ChooseMissionScreenState extends State<ChooseMissionScreen> {
+class ChooseMissionScreenState extends State<ChooseMissionScreen> {
   final List<Mission> missions = [
     Mission(name: 'Pick up groceries', location: 'Downtown', reward: 20.0),
     Mission(name: 'Walk dog', location: 'Parkside', reward: 15.0),
