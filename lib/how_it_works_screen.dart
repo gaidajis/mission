@@ -1,5 +1,6 @@
 // lib/how_it_works_screen.dart
 import 'package:flutter/material.dart';
+import 'send_on_mission_screen.dart';
 
 class HowItWorksScreen extends StatelessWidget {
   const HowItWorksScreen({super.key});
@@ -9,7 +10,7 @@ class HowItWorksScreen extends StatelessWidget {
     final Color primaryColor = const Color(0xFF2962FF);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: primaryColor,
+        backgroundColor: Colors.grey[900],
         title: const Text(
           'How it works',
           style: TextStyle(color: Colors.white),
@@ -36,17 +37,8 @@ class HowItWorksScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    'How It Works',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   const Text(
-                    'The Mission is simple! Here’s how it works:',
+                    'The mission is simple!',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -83,7 +75,12 @@ class HowItWorksScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SendOnMissionScreen()),
+                    );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

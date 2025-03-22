@@ -7,9 +7,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = const Color(0xFF2962FF);
+    final Color primaryColor = const Color(0xFF424242);
     return Scaffold(
-      appBar: AppBar(
+       appBar: AppBar(
         backgroundColor: primaryColor,
         title: Text(
           'Home',
@@ -18,6 +18,7 @@ class HomeScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
