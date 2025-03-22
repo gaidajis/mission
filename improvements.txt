@@ -1,0 +1,29 @@
+lib/
+├── main.dart
+├── screens/
+│   ├── home_screen.dart
+│   ├── how_it_works_screen.dart
+│   ├── send_on_mission_screen.dart
+│   ├── choose_mission_screen.dart
+│   ├── contact_screen.dart
+│   ├── login_screen.dart
+│   ├── profile_screen.dart
+│   └── mission_details_screen.dart
+└── widgets/
+│   ├── common/             # For widely reusable widgets
+│   │   ├── custom_button.dart
+│   │   └── info_card.dart
+│   ├── specific/           # For widgets used in specific screens/features
+│   │   ├── home_screen_widgets/
+│   │   │   ├── mission_item.dart
+│   │   │   └── category_grid.dart
+│   │   └── profile_screen_widgets/
+│   │       └── profile_info_row.dart
+│   └── (other widget files)
+├── services/
+│   ├── auth_service.dart
+│   ├── data_service.dart
+│   ├── api_service.dart
+│   └── (other service files)
+└── extensions/
+    └── string_extensions.dart
