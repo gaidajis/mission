@@ -13,14 +13,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Hide debug banner
+      debugShowCheckedModeBanner: false,
       title: 'The Mission App',
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFF2962FF, <int, Color>{
-          50: Color(0xFFE3F2FD), 100: Color(0xFFBBDEFB), 200: Color(0xFF90CAF9), 300: Color(0xFF64B5F6), 400: Color(0xFF42A5F5), 500: Color(0xFF2962FF), 600: Color(0xFF1E88E5), 700: Color(0xFF1976D2), 800: Color(0xFF1565C0), 900: Color(0xFF0D47A1),
+          50: const Color(0xFFE3F2FD),
+          100: const Color(0xFFBBDEFB),
+          200: const Color(0xFF90CAF9),
+          300: const Color(0xFF64B5F6),
+          400: const Color(0xFF42A5F5),
+          500: const Color(0xFF2962FF),
+          600: const Color(0xFF1E88E5),
+          700: const Color(0xFF1976D2),
+          800: const Color(0xFF1565C0),
+          900: const Color(0xFF0D47A1),
         }),
         useMaterial3: true,
         fontFamily: 'Roboto',
+        brightness: Brightness.dark, // Dark theme
+        colorScheme: ColorScheme.fromSeed(seedColor: primaryColor, brightness: Brightness.dark),
       ),
       home: const MainScreen(),
     );
@@ -49,126 +60,111 @@ class _MyHomePageState extends State<MyHomePage> {
     const SendOnMissionScreen(),
     const ChooseMissionScreen(),
     const ContactScreen(),
-    const LoginScreen(), 
+    const LoginScreen(),
   ];
 
- void _onDrawerItemTapped(int index) {
+  void _onDrawerItemTapped(int index) {
     if (_selectedIndex == index) return;
 
     setState(() {
       _selectedIndex = index;
     });
-    Navigator.pop(context); // Close the drawer
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          const Color(0xFFF5F5F5), // Light background for modern look
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: Center(
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 50,
-            //fit: BoxFit.cover,
-            errorBuilder: (BuildContext context, Object exception,
-                StackTrace? stackTrace) {
-              return const Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 50,
-              );
-            },
-          )),
-        titleTextStyle: const TextStyle(fontFamily: 'Roboto', color: Colors.white),
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          'The Mission App',
+          style: TextStyle(fontFamily: 'Roboto', color: Colors.white),
+        ),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-             DrawerHeader(
-              padding: const EdgeInsets.only(
-                  left: 16.0, bottom: 16.0, top: 40.0), 
-              decoration: const BoxDecoration(
-              ),
-              child: const Align(
-                 alignment: Alignment.bottomLeft,
-                 child: Text(
+            const DrawerHeader(
+              padding: EdgeInsets.only(left: 16.0, bottom: 16.0, top: 40.0),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
                   'The Mission APP',
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold), // More prominent title
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),  
+            ),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               leading: Icon(Icons.home, color: _selectedIndex == 0 ? primaryColor : Colors.grey[600]),
-              title: Text('Home', style: TextStyle(color: _selectedIndex == 0 ? primaryColor : Colors.black87,)),
-              selected: _selectedIndex == 0, // Highlight the selected item
-              selectedTileColor:
-                  Colors.grey[200], // Color when item is selected
-
+              title: Text('Home', style: TextStyle(color: _selectedIndex == 0 ? primaryColor : Colors.white)),
+              selected: _selectedIndex == 0,
+              selectedTileColor: Colors.grey[800],
               onTap: () => _onDrawerItemTapped(0),
             ),
-            const Divider(indent: 16.0, endIndent: 16.0, height: 0),          ListTile(
+            const Divider(indent: 16.0, endIndent: 16.0, height: 0),
+            ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               leading: Icon(Icons.info_outline, color: _selectedIndex == 1 ? primaryColor : Colors.grey[600]),
-              title: Text('How does it work', style: TextStyle(color: _selectedIndex == 1 ? primaryColor : Colors.black87,)),
+              title: Text('How it works', style: TextStyle(color: _selectedIndex == 1 ? primaryColor : Colors.white)),
               selected: _selectedIndex == 1,
               onTap: () => _onDrawerItemTapped(1),
             ),
-            const Divider(indent: 16.0, endIndent: 16.0,height: 0),           ListTile(
+            const Divider(indent: 16.0, endIndent: 16.0, height: 0),
+            ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               leading: Icon(Icons.send, color: _selectedIndex == 2 ? primaryColor : Colors.grey[600]),
-              title: Text('Send on Mission', style: TextStyle(color: _selectedIndex == 2 ? primaryColor : Colors.black87,)),
+              title: Text('Send on Mission', style: TextStyle(color: _selectedIndex == 2 ? primaryColor : Colors.white)),
               selected: _selectedIndex == 2,
               onTap: () => _onDrawerItemTapped(2),
             ),
-            const Divider(indent: 16.0, endIndent: 16.0, height: 0),           ListTile(
+            const Divider(indent: 16.0, endIndent: 16.0, height: 0),
+            ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               leading: Icon(Icons.search, color: _selectedIndex == 3 ? primaryColor : Colors.grey[600]),
-              title: Text('Choose your mission', style: TextStyle(color: _selectedIndex == 3 ? primaryColor : Colors.black87,)),
+              title: Text('Choose your mission', style: TextStyle(color: _selectedIndex == 3 ? primaryColor : Colors.white)),
               selected: _selectedIndex == 3,
               onTap: () => _onDrawerItemTapped(3),
             ),
-            const Divider(indent: 16.0, endIndent: 16.0, height: 0),           ListTile(
+            const Divider(indent: 16.0, endIndent: 16.0, height: 0),
+            ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              leading: Icon(Icons.phone, color: _selectedIndex == 4 ? Colors.blue : Colors.grey[600]),
-              title: Text('Contact', style: TextStyle(color: _selectedIndex == 4 ? Colors.blue : Colors.black87,)),
+              leading: Icon(Icons.phone, color: _selectedIndex == 4 ? primaryColor : Colors.grey[600]),
+              title: Text('Contact', style: TextStyle(color: _selectedIndex == 4 ? primaryColor : Colors.white)),
               selected: _selectedIndex == 4,
               onTap: () => _onDrawerItemTapped(4),
             ),
-            const Divider(indent: 16.0, endIndent: 16.0, height: 0),            ListTile(
+            const Divider(indent: 16.0, endIndent: 16.0, height: 0),
+            ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              leading: Icon(Icons.account_circle, color: _selectedIndex == 5 ? Colors.blue : Colors.grey[600]),
-              title: Text('Login', style: TextStyle(color: _selectedIndex == 5 ? Colors.blue : Colors.black87,)),
+              leading: Icon(Icons.account_circle, color: _selectedIndex == 5 ? primaryColor : Colors.grey[600]),
+              title: Text('Login', style: TextStyle(color: _selectedIndex == 5 ? primaryColor : Colors.white)),
               selected: _selectedIndex == 5,
               onTap: () => _onDrawerItemTapped(5),
             ),
           ],
         ),
       ),
-
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[900],
         selectedItemColor: primaryColor,
-        unselectedItemColor: Colors.grey[600],        
-        
-        
+        unselectedItemColor: Colors.grey[600],
         currentIndex: _selectedIndex,
-        onTap: (index) {          
-          setState(() {_selectedIndex = index;}); // Update the selected index
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
         },
         type: BottomNavigationBarType.fixed,
-
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
@@ -184,133 +180,120 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-    );    
+    );
   }
 }
 
-class HomeScreen extends StatelessWidget {  
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( // Using Scaffold for a basic page structure
-        appBar: AppBar(
-          backgroundColor: primaryColor,
-          title: const Text(
-            'Home',
-            style: TextStyle(
-              color: Colors.white, // Ensure text color is readable
-              fontWeight: FontWeight.bold,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        title: const Text(
+          'Home',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Image Placeholder with rounded corners
             Container(
               width: double.infinity,
-              height: 200,
+              height: 120,
               decoration: BoxDecoration(
-                color: Colors.grey[300], // Placeholder color
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey[800],
+                borderRadius: BorderRadius.circular(8),
               ),
               child: const Center(
-                child: Icon(Icons.image_outlined, size: 60, color: Colors.grey),
+                child: Icon(Icons.image_outlined, size: 40, color: Colors.grey),
               ),
             ),
-            const SizedBox(height: 24), // Increased spacing
-            // Introduction Card
-             Container(
-              padding: const EdgeInsets.all(20), // Increased padding
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withAlpha(76), // Softer shadow
-                    spreadRadius: 3,
-                    blurRadius: 7,
-                    offset: const Offset(0, 5),
+                    color: Colors.grey.withAlpha(76),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     'About The Mission',
-                    textAlign: TextAlign.left, // Align title to the left
+                    textAlign: TextAlign.left,
                     style: TextStyle(
-                      fontSize: 26, // Larger font size
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: primaryColor, // Use secondary color
+                      color: primaryColor,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   const Text(
-                    "What is The Mission? It's a platform that allows you to give tasks in minutes. It connects people from all over the world. It provides work for people quickly. You don't need to go through a long and complicated process to give or accept a task. All people on the platform are verified. It's a better guarantee for users than classified ads websites.",
+                    "The Mission is a platform that allows you to give tasks in minutes. It connects people from all over the world. It provides work for people quickly. It's a better guarantee for users than classified ads websites.",
                     textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 18, color: Colors.black87), // Slightly larger and darker text
+                    style: TextStyle(fontSize: 14, color: Colors.white70),
                   ),
-
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Text(
                     'Imagine the Possibilities',
                     textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: primaryColor), // Use primary color with slightly lighter weight
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: primaryColor),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const <Widget>[
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 6.0), // Add vertical padding for list items
-                        child: Text("• Need a hand with setting up your new TV? Or perhaps you need someone to pick up a gift while you are working?", style: TextStyle(fontSize: 16, color: Colors.black87)),                       
+                        padding: EdgeInsets.symmetric(vertical: 4.0),
+                        child: Text("• Need help with tasks?", style: TextStyle(fontSize: 14, color: Colors.white70)),
                       ),
-
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 6.0),
-                        child: Text("• You could get a personalized menu, or a list of activities, tailored to your family's preferences.", style: TextStyle(fontSize: 16, color: Colors.black87)),                       
+                        padding: EdgeInsets.symmetric(vertical: 4.0),
+                        child: Text("• Want personalized services?", style: TextStyle(fontSize: 14, color: Colors.white70)),
                       ),
-
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 6.0),
-                        child: Text("• Or, how about finding someone to assist with pet care while you're away, or to walk your dog?", style: TextStyle(fontSize: 16, color: Colors.black87)),                       
+                        padding: EdgeInsets.symmetric(vertical: 4.0),
+                        child: Text("• Need help with pets?", style: TextStyle(fontSize: 14, color: Colors.white70)),
                       ),
-
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 6.0),
-                        child: Text("• And, as you browse, you will find profiles with many skills and qualifications, along with ratings and mission history, all in one place.", style: TextStyle(fontSize: 16, color: Colors.black87)),                       
+                        padding: EdgeInsets.symmetric(vertical: 4.0),
+                        child: Text("• Want verified profiles?", style: TextStyle(fontSize: 14, color: Colors.white70)),
                       ),
-
                     ],
                   ),
-                  
-                  const SizedBox(height: 16),
-                  // Example of a button widget
+                  const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: () {
-                      // Add your action here
-                    },
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                      textStyle: const TextStyle(fontSize: 18),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      textStyle: const TextStyle(fontSize: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: const Text('Explore Missions', style: TextStyle(color: Colors.white)),
                   ),
                 ],
-              ),          
+              ),
             ),
-            const SizedBox(height: 24), // Add more spacing at the end
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -323,127 +306,124 @@ class HowItWorksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: const Text('How it works', style: TextStyle(color: Colors.white),),        
+        title: const Text(
+          'How it works',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      body:  Padding(
-          padding: const EdgeInsets.all(16.0),
-           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-             Container(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(16), // More rounded corners
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withAlpha(76), // Softer shadow
-                    spreadRadius: 3,
-                    blurRadius: 7,
-                    offset: const Offset(0, 5),
+                    color: Colors.grey.withAlpha(76),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-               child: Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     'How It Works',
-                    textAlign: TextAlign.left, // Align title to the left
+                    textAlign: TextAlign.left,
                     style: const TextStyle(
-                      fontSize: 26, // Larger font size
-                     fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   const Text(
                     'The Mission is simple! Here’s how it works:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
-                ])),                
-              const SizedBox(height: 24),
-              _buildStepCard(
-                  context,
-                  'Post a Mission',
-                  'Need something done? Just post a mission with a price and description.',
-                  'assets/images/post.png'),
-              const SizedBox(height: 16),
-              _buildStepCard(
-                  context,
-                  'Get Applications',
-                  'Verified users will apply to your mission.',
-                  'assets/images/applications.png'),
-              const SizedBox(height: 16),
-              _buildStepCard(
-                  context,
-                  'Choose a Helper',
-                  'Review applications and choose the best person for the job.',
-                  'assets/images/choose.png'),
-              const SizedBox(height: 16),
-              _buildStepCard(
-                  context,
-                  'Mission Completed',
-                  'Once the mission is done, approve the completion and the heper gets paid.',
-                  'assets/images/completed.png'),
-              const SizedBox(height: 24),
-              Center(
-                  child: ElevatedButton(
-                onPressed: () {
-                  // Add your action here
-                },
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildStepCard(
+              context,
+              'Post a Mission',
+              'Post a mission with price and description.',
+              Icons.add_task,
+            ),
+            const SizedBox(height: 12),
+            _buildStepCard(
+              context,
+              'Get Applications',
+              'Verified users apply to your mission.',
+              Icons.assignment_turned_in,
+            ),
+            const SizedBox(height: 12),
+            _buildStepCard(
+              context,
+              'Choose a Helper',
+              'Review and choose the best person.',
+              Icons.person_search,
+            ),
+            const SizedBox(height: 12),
+            _buildStepCard(
+              context,
+              'Mission Completed',
+              'Approve completion, helper gets paid.',
+              Icons.check_circle_outline,
+            ),
+            const SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  textStyle: const TextStyle(fontSize: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  textStyle: const TextStyle(fontSize: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Get Started Now',
-                    style: TextStyle(color: Colors.white)),                
+                child: const Text('Get Started Now', style: TextStyle(color: Colors.white)),
               ),
-              )           
-            ],
-          ),
+            ),
+          ],
         ),
-        
-      
+      ),
     );
   }
 
-  Widget _buildStepCard(BuildContext context, String title, String description, String imagePath) {
+  Widget _buildStepCard(BuildContext context, String title, String description, IconData icon) {
     return Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              // Image on the left
-              Image.asset(
-                imagePath,
-                width: 80,
-                height: 80,
+      elevation: 2,
+      color: Colors.grey[900],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Icon(icon, size: 40, color: primaryColor),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(description, style: const TextStyle(fontSize: 12, color: Colors.white70)),
+                ],
               ),
-              const SizedBox(width: 16),
-              // Text on the right
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Text(description, style: const TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }
@@ -458,9 +438,9 @@ class SendOnMissionScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Send on Mission',          
-              style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)), const SizedBox(height: 16),
+          Text('Send on Mission',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
+          const SizedBox(height: 16),
           Expanded(
             child: GridView.count(
               crossAxisCount: 2,
@@ -475,25 +455,26 @@ class SendOnMissionScreen extends StatelessWidget {
                 'Animals',
                 'SpecialMissions',
                 'Repairs',
-              ].map((category){
+              ].map((category) {
                 return Card(
                   elevation: 3,
+                  color: Colors.grey[900],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: InkWell(
                     onTap: () {
-                      //print('$category tapped');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MissionDetailsScreen(category: category)),
+                            builder: (context) => MissionDetailsScreen(category: category)),
                       );
                     },
                     child: Center(
                       child: Text(
                         category,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                     ),
                   ),
@@ -501,7 +482,7 @@ class SendOnMissionScreen extends StatelessWidget {
               }).toList(),
             ),
           )
-        ],        
+        ],
       ),
     );
   }
@@ -517,31 +498,27 @@ class ChooseMissionScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Choose Your Mission',         
-              style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+          Text('Choose Your Mission',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
           const Text(
-            'Browse available missions posted by other users. You can filter by category, location, and price.',
-            style: TextStyle(fontSize: 16),
+            'Browse available missions.',
+            style: TextStyle(fontSize: 12),
           ),
           const SizedBox(height: 10),
-
-
           const Text(
-            '**Available Missions:**',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            'Available Missions:',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          const Text('- Need someone to pick up groceries (Location: Downtown, Price: \$20)', style: TextStyle(fontSize: 16)),
+          const Text('- Pick up groceries (Downtown, \$20)', style: TextStyle(fontSize: 12)),
           const SizedBox(height: 8),
-          const Text('- Walk my dog for 30 minutes (Location: Parkside, Price: \$15)', style: TextStyle(fontSize: 16)),
+          const Text('- Walk dog (Parkside, \$15)', style: TextStyle(fontSize: 12)),
           const SizedBox(height: 8),
-          const Text('- Help with assembling furniture (Location: Suburbs, Price: \$30)', style: TextStyle(fontSize: 16)),
-          // Implement actual mission listing here (e.g., using ListView.builder fetching data)
+          const Text('- Assemble furniture (Suburbs, \$30)', style: TextStyle(fontSize: 12)),
         ],
       ),
-    );    
+    );
   }
 }
 
@@ -554,38 +531,27 @@ class ContactScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[         
+        children: <Widget>[
           Text('Contact Us',
-              style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
           const Text(
-              'We are here to help! Feel free to reach out to us through the following methods:',
-              style: TextStyle(fontSize: 16)),
+            'Reach out to us through the following methods:',
+            style: TextStyle(fontSize: 12),
+          ),
           const SizedBox(height: 16),
-          const Text('**Email:**',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Email:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text('contact@themissionapp.com',
-              style: TextStyle(fontSize: 16)),
+          const Text('contact@themissionapp.com', style: TextStyle(fontSize: 12)),
           const SizedBox(height: 16),
-          const Text('**Phone:**',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Phone:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text('+1 555-123-4567',
-              style: TextStyle(fontSize: 16)),
+          const Text('+1 555-123-4567', style: TextStyle(fontSize: 12)),
           const SizedBox(height: 16),
-          const Text('**Address:**',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Address:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text('123 Main Street, Anytown, USA',
-              style: TextStyle(fontSize: 16)),
-          const SizedBox(height: 16),
-          const Text('**Address:**', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          const Text('123 Main Street, Anytown, USA', style: TextStyle(fontSize: 16)),
-          // Add a contact form or other contact methods here
-        ],        
+          const Text('123 Main Street, Anytown, USA', style: TextStyle(fontSize: 12)),
+        ],
       ),
     );
   }
@@ -604,28 +570,29 @@ class LoginScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(24.0),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.grey[900],
+              borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withAlpha(51),
                   spreadRadius: 1,
-                  blurRadius: 5, 
+                  blurRadius: 5,
                   offset: const Offset(0, 3),
                 ),
               ],
             ),
             child: Column(
               children: <Widget>[
-                Text('Login', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: primaryColor)),
-                const SizedBox(height: 20),                
-                TextField(
+                Text('Login',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
+                const SizedBox(height: 20),
+                const TextField(
                   decoration: InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 16),                
+                const SizedBox(height: 16),
                 const TextField(
                   obscureText: true,
                   decoration: InputDecoration(
@@ -638,24 +605,22 @@ class LoginScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   onPressed: () {
-                    // Implement login logic
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ProfileScreen()), // Navigate to profile after login
+                      MaterialPageRoute(builder: (context) => const ProfileScreen()),
                     );
-
                   },
-                  child: const Text('Login', style: TextStyle(fontSize: 18)),
+                  child: const Text('Login', style: TextStyle(fontSize: 14)),
                 ),
               ],
             ),
           ),
         ],
-      ),      
+      ),
     );
   }
 }
@@ -670,39 +635,41 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: primaryColor,
         title: const Text(
           'My Profile',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,),          
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),       
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-         crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text('My Profile', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+            Text('My Profile',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
             const SizedBox(height: 16),
-            const Text('Name: John Doe', style: TextStyle(fontSize: 16)),
+            const Text('Name: John Doe', style: TextStyle(fontSize: 12)),
             const SizedBox(height: 8),
-            const Text('Email: john.doe@example.com', style: TextStyle(fontSize: 16)),
+            const Text('Email: john.doe@example.com', style: TextStyle(fontSize: 12)),
             const SizedBox(height: 24),
-            Text('My Missions', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor)),
+            Text('My Missions',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
             const SizedBox(height: 12),
-            const Text('Given: 10', style: TextStyle(fontSize: 16)),            
+            const Text('Given: 10', style: TextStyle(fontSize: 12)),
             const SizedBox(height: 8),
-            const Text('Taken: 5', style: TextStyle(fontSize: 16)),            
+            const Text('Taken: 5', style: TextStyle(fontSize: 12)),
             const SizedBox(height: 8),
-            const Text('Total: 15', style: TextStyle(fontSize: 16)),
+            const Text('Total: 15', style: TextStyle(fontSize: 12)),
             const SizedBox(height: 24),
-            Text('Total Earnings', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor)),
-            const SizedBox(height: 12),            
-            const Text('\$500.00', style: TextStyle(fontSize: 18)),
-            const SizedBox(height: 24),
-            Text('My Calendar', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor)),
+            Text('Total Earnings',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
             const SizedBox(height: 12),
-            const Text('Calendar functionality can be implemented here.', style: TextStyle(fontSize: 16)),
-            // Consider using a calendar widget here
+            const Text('\$500.00', style: TextStyle(fontSize: 14)),
+            const SizedBox(height: 24),
+            Text('My Calendar',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
+            const SizedBox(height: 12),
+            const Text('Calendar functionality here.', style: TextStyle(fontSize: 12)),
           ],
-        ),        
+        ),
       ),
     );
   }
@@ -742,7 +709,7 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
     final canLaunch = await canLaunchUrlString(emailLaunchUri.toString());
     if (!mounted) return;
     if (canLaunch) {
-      await launchUrlString(emailLaunchUri.toString(),);
+      await launchUrlString(emailLaunchUri.toString());
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Mission details sent via email!')),
@@ -751,51 +718,60 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
     } else {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content:  Text('Could not launch email app.')),
+        const SnackBar(content: Text('Could not launch email app.')),
       );
-    }    
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: primaryColor,
-          title: Text(
-             'New ${widget.category} Mission', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold,),
-          ),
-          iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: primaryColor,
+        title: Text(
+          'New ${widget.category} Mission',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
-      body: SingleChildScrollView(       
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Create a new ${widget.category} mission', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor)), // Use primary color
+            Text('Create a new ${widget.category} mission',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
             const SizedBox(height: 16),
             TextField(controller: _priceController, decoration: const InputDecoration(labelText: 'Price')),
             const SizedBox(height: 8),
-            TextField(controller: _descriptionController, maxLines: 3, decoration: const InputDecoration(labelText: 'Description')),
+            TextField(
+                controller: _descriptionController,
+                maxLines: 3,
+                decoration: const InputDecoration(labelText: 'Description')),
             const SizedBox(height: 8),
-            TextField(controller: _locationController, decoration: const InputDecoration(labelText: 'Location')),
+            TextField(
+                controller: _locationController, decoration: const InputDecoration(labelText: 'Location')),
             const SizedBox(height: 8),
-            TextField(controller: _dueDateController, decoration: const InputDecoration(labelText: 'Due Date')),
+            TextField(
+                controller: _dueDateController, decoration: const InputDecoration(labelText: 'Due Date')),
             const SizedBox(height: 8),
-            TextField(controller: _criteriaController, maxLines: 2, decoration: const InputDecoration(labelText: 'Criteria')),
+            TextField(
+                controller: _criteriaController,
+                maxLines: 2,
+                decoration: const InputDecoration(labelText: 'Criteria')),
             const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-               backgroundColor: primaryColor,
+                backgroundColor: primaryColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               onPressed: _sendEmail,
-              child: const Text('Send Mission', style: TextStyle(fontSize: 18)),
+              child: const Text('Send Mission', style: TextStyle(fontSize: 14)),
             ),
           ],
         ),
-      ),      
+      ),
     );
   }
 }
