@@ -1,5 +1,6 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -8,14 +9,13 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color primaryColor = const Color(0xFF424242);
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: primaryColor,
         title: Text(
           'Home',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          )
+          style: GoogleFonts.genos(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+        
         ),
         
       ),
@@ -24,6 +24,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
@@ -44,40 +45,44 @@ class HomeScreen extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     'About The Mission',
-                   
-                    style: TextStyle(
-                      fontSize: 20,
+                    style: GoogleFonts.genos(
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
+                      color: Colors.white,
+                    ),                   
+                    
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     "The Mission is a platform that allows you to give tasks in minutes. It connects people from all over the world. It provides work for people quickly. It's a better guarantee for users than classified ads websites.",
-                   
-                    style: TextStyle(fontSize: 14, color: Colors.white70),
+                    style: TextStyle(fontSize: 18, color: Colors.white70),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Imagine the Possibilities',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: primaryColor),
-                  ),
+                Row(
+                 children: <Widget>[
+                    Icon(Icons.rocket_launch, color: Colors.white), 
+                    SizedBox(width: 8), 
+                    Text(
+                     'Imagine the Possibilities',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.white),
+                    ),
+                  ],
+                ),
                   const SizedBox(height: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const <Widget>[
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 4.0),
-                        child: Text("• Need help with tasks?", style: TextStyle(fontSize: 14, color: Colors.white70)),
+                        child: Text("• Need help with tasks?", style: TextStyle(fontSize: 18, color: Colors.white70)),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 4.0),
-                        child: Text("• Want personalized services?", style: TextStyle(fontSize: 14, color: Colors.white70)),
+                        child: Text("• Want personalized services?", style: TextStyle(fontSize: 18, color: Colors.white70)),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 4.0),
-                        child: Text("• Need help with pets?", style: TextStyle(fontSize: 14, color: Colors.white70)),
+                        child: Text("• Need help with pets?", style: TextStyle(fontSize: 18, color: Colors.white70)),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -88,15 +93,20 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {},
+                    
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      textStyle: const TextStyle(fontSize: 14),
+                      backgroundColor: Colors.white, 
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Explore Missions', style: TextStyle(color: Colors.white)),
+                    
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [const Text('Explore Missions', style: TextStyle(color: Colors.black),), Icon(Icons.explore, color: Colors.black)],
+                    ),
                   ),
                 ],
               ),
