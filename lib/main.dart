@@ -45,15 +45,9 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor, brightness: Brightness.dark),
       ),
-      home: const MainScreen(),
-      );
+      home: const MyHomePage(), // Directly use MyHomePage as the home screen
+    );
   }
-}
-
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const MyHomePage();
 }
 
 class MyHomePage extends StatefulWidget {
@@ -66,13 +60,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const HomeScreen(),
-    const HowItWorksScreen(),
-    const SendOnMissionScreen(),
-    const ChooseMissionScreen(),
-    const ContactScreen(),
-    const LoginScreen(),
+  static const List<Widget> _widgetOptions = <Widget>[
+    HomeScreen(),
+    HowItWorksScreen(),
+    SendOnMissionScreen(),
+    ChooseMissionScreen(),
+    ContactScreen(),
+    LoginScreen(),
   ];
 
   void _onDrawerItemTapped(int index) {
@@ -90,10 +84,26 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: const Color(0xFF222222),
       appBar: AppBar(
         backgroundColor: const Color(0xFF333333),
-        title: Text(
-          'The Mission',
-          style: GoogleFonts.playfairDisplay(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/logo.jpg',
+              height: 30,
+              width: 30,
+            ),
+            const SizedBox(width: 8),
+            Image.asset(
+              'assets/images/rocket.png',
+              height: 24,
+              width: 24,
+            ),
+            const SizedBox(width: 8),
+            Text('The Mission',
+                style: GoogleFonts.genos(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
+          ],
         ),
+        centerTitle: true,
       ),
       drawer: Drawer(
         child: ListView(
@@ -101,23 +111,32 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             DrawerHeader(
               padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 40.0),
-              decoration:  BoxDecoration(color: const Color(0xFF333333)),
+              decoration: BoxDecoration(color: const Color(0xFF333333)),
               child: Align(
                 alignment: Alignment.bottomLeft,
-                child: Text(
-                  'The Mission',
-                  style: GoogleFonts.playfairDisplay(
-                    color: Colors.white,  
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/logo.jpg',
+                      height: 30,
+                      width: 30,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'The Mission',
+                      style: GoogleFonts.genos(color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              leading: Icon(Icons.home, color: _selectedIndex == 0 ? primaryColor : Colors.grey[600]),
-              title: Text('Home', style: TextStyle(color: _selectedIndex == 0 ? primaryColor : Colors.white)),
+              leading: Icon(Icons.home, color: _selectedIndex == 0 ? Theme.of(context).primaryColor : Colors.grey[600]),
+              title: Text('Home', style: TextStyle(color: _selectedIndex == 0 ? Theme.of(context).primaryColor : Colors.white)),
               selected: _selectedIndex==0,
               selectedTileColor: Colors.grey[800],
               onTap: () => _onDrawerItemTapped(0),
@@ -125,8 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0, height: 0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              leading: Icon(Icons.info_outline, color: _selectedIndex == 1 ? primaryColor : Colors.grey[600]),
-              title: Text('How it works', style: TextStyle(color: _selectedIndex == 1 ? primaryColor : Colors.white)),
+              leading: Icon(Icons.info_outline, color: _selectedIndex == 1 ? Theme.of(context).primaryColor : Colors.grey[600]),
+              title: Text('How it works', style: TextStyle(color: _selectedIndex == 1 ? Theme.of(context).primaryColor : Colors.white)),
               selectedTileColor: Colors.grey[800],
               selected: _selectedIndex == 1,
               onTap: () => _onDrawerItemTapped(1),
@@ -134,8 +153,8 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0, height: 0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              leading: Icon(Icons.send, color: _selectedIndex == 2 ? primaryColor : Colors.grey[600]),
-              title: Text('Send on Mission', style: TextStyle(color: _selectedIndex == 2 ? primaryColor : Colors.white)),
+              leading: Icon(Icons.send, color: _selectedIndex == 2 ? Theme.of(context).primaryColor : Colors.grey[600]),
+              title: Text('Send on Mission', style: TextStyle(color: _selectedIndex == 2 ? Theme.of(context).primaryColor : Colors.white)),
               selectedTileColor: Colors.grey[800],
               selected: _selectedIndex == 2,
               onTap: () => _onDrawerItemTapped(2),
@@ -143,8 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0, height: 0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              leading: Icon(Icons.search, color: _selectedIndex == 3 ? primaryColor : Colors.grey[600]),
-              title: Text('Choose your mission', style: TextStyle(color: _selectedIndex == 3 ? primaryColor : Colors.white)),
+              leading: Icon(Icons.search, color: _selectedIndex == 3 ? Theme.of(context).primaryColor : Colors.grey[600]),
+              title: Text('Choose your mission', style: TextStyle(color: _selectedIndex == 3 ? Theme.of(context).primaryColor : Colors.white)),
               selectedTileColor: Colors.grey[800],
               selected: _selectedIndex == 3,
               onTap: () => _onDrawerItemTapped(3),
@@ -152,8 +171,8 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0, height: 0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              leading: Icon(Icons.phone, color: _selectedIndex == 4 ? primaryColor : Colors.grey[600]),
-              title: Text('Contact', style: TextStyle(color: _selectedIndex == 4 ? primaryColor : Colors.white)),
+              leading: Icon(Icons.phone, color: _selectedIndex == 4 ? Theme.of(context).primaryColor : Colors.grey[600]),
+              title: Text('Contact', style: TextStyle(color: _selectedIndex == 4 ? Theme.of(context).primaryColor : Colors.white)),
               selectedTileColor: Colors.grey[800],
               selected: _selectedIndex == 4,
               onTap: () => _onDrawerItemTapped(4),
@@ -161,8 +180,8 @@ class _MyHomePageState extends State<MyHomePage> {
             const Divider(indent: 16.0, endIndent: 16.0, height: 0),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              leading: Icon(Icons.account_circle, color: _selectedIndex == 5 ? primaryColor : Colors.grey[600]),
-              title: Text('Login', style: TextStyle(color: _selectedIndex == 5 ? primaryColor : Colors.white)),
+              leading: Icon(Icons.account_circle, color: _selectedIndex == 5 ? Theme.of(context).primaryColor : Colors.grey[600]),
+              title: Text('Login', style: TextStyle(color: _selectedIndex == 5 ? Theme.of(context).primaryColor : Colors.white)),
               selectedTileColor: Colors.grey[800],
               selected: _selectedIndex == 5,
               onTap: () => _onDrawerItemTapped(5),
@@ -173,6 +192,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-  );
- }
+    );
+  }
 }
