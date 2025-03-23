@@ -1,5 +1,6 @@
 // lib/send_on_mission_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'mission_details_screen.dart'; // Ensure this import is correct based on your file structure
 
 class SendOnMissionScreen extends StatelessWidget {
@@ -14,7 +15,7 @@ class SendOnMissionScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Send on Mission',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
+              style: GoogleFonts.genos(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
           const SizedBox(height: 16),
           Expanded(
             child: GridView.count(
@@ -49,7 +50,7 @@ class SendOnMissionScreen extends StatelessWidget {
                       child: Text(
                         category,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.genos(fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                     ),
                   ),

@@ -1,6 +1,5 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,10 +12,10 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: primaryColor,
         title: Text(
           'Home',
-          style: GoogleFonts.merriweather(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-          ),
+          )
         ),
         
       ),
@@ -45,7 +44,7 @@ class HomeScreen extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     'About The Mission',
-                    textAlign: TextAlign.left,
+                   
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -55,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     "The Mission is a platform that allows you to give tasks in minutes. It connects people from all over the world. It provides work for people quickly. It's a better guarantee for users than classified ads websites.",
-                    textAlign: TextAlign.left,
+                   
                     style: TextStyle(fontSize: 14, color: Colors.white70),
                   ),
                   const SizedBox(height: 16),

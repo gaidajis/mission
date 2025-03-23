@@ -1,5 +1,6 @@
 // lib/how_it_works_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'send_on_mission_screen.dart';
 
 class HowItWorksScreen extends StatelessWidget {
@@ -10,10 +11,10 @@ class HowItWorksScreen extends StatelessWidget {
     final Color primaryColor = const Color(0xFF2962FF);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        title: const Text(
+        backgroundColor: Colors.black,
+        title: Text(
           'How it works',
-          style: TextStyle(color: Colors.white),
+          style: GoogleFonts.genos(color: Colors.white),
         ),
       ),
       body: Padding(
@@ -35,10 +36,10 @@ class HowItWorksScreen extends StatelessWidget {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text(
-                    'The mission is simple!',
+                 Text(
+                    'The mission is simple!',   
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -82,7 +83,7 @@ class HowItWorksScreen extends StatelessWidget {
                     );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
+                  backgroundColor: primaryColor,  
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   textStyle: const TextStyle(fontSize: 14),
                   shape: RoundedRectangleBorder(
@@ -114,11 +115,11 @@ class HowItWorksScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  Text(title, style: GoogleFonts.genos(fontSize: 14, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text(description, style: const TextStyle(fontSize: 12, color: Colors.white70)),
-                ],
-              ),
+                  Text(description, style: GoogleFonts.genos(fontSize: 12, color: Colors.white70)),
+               ],
+           ),
             ),
           ],
         ),

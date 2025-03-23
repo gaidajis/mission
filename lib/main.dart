@@ -38,13 +38,15 @@ class MyApp extends StatelessWidget {
           800: const Color(0xFF1565C0),
           900: const Color(0xFF0D47A1),
         }),
+        textTheme: GoogleFonts.genosTextTheme(
+          Theme.of(context).textTheme,
+        ),
         useMaterial3: true,
-        fontFamily: GoogleFonts.playfairDisplay().fontFamily, // Elegant font
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor, brightness: Brightness.dark),
       ),
       home: const MainScreen(),
-    );
+      );
   }
 }
 
