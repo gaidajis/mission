@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Row(
                   children: [
                     Image.asset(
-                      'assets/images/logo.jpg',
+                      'assets/images/m7.jpeg',
                       height: 30,
                       width: 30,
                     ),
