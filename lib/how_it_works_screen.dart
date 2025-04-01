@@ -7,19 +7,18 @@ class HowItWorksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = const Color.fromARGB(255, 217, 217, 218);
-    final Color iconColor = Colors.grey;
+    const Color iconColor = Colors.grey;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.black87,
         title: Text(
           'How it works',
-          style: GoogleFonts.genos(color: Colors.white),
+          style: GoogleFonts.genos(color: Colors.grey),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color.fromARGB(255, 156, 157, 168), Color(0xFF0D47A1)], // Bolder blues
+              colors: [Colors.black87, Colors.black], // Dark gradient
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -27,9 +26,9 @@ class HowItWorksScreen extends StatelessWidget {
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.grey[900]!, Colors.black], // Bolder dark gradient
+            colors: [Colors.black87, Colors.black], // Consistent dark gradient
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -45,7 +44,7 @@ class HowItWorksScreen extends StatelessWidget {
                 style: GoogleFonts.genos(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.grey, // Silver-like
                 ),
               ),
             ),
@@ -100,7 +99,7 @@ class HowItWorksScreen extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
+                  backgroundColor: Colors.black54, // Dark button
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   textStyle: const TextStyle(fontSize: 18),
@@ -109,9 +108,10 @@ class HowItWorksScreen extends StatelessWidget {
                   ),
                   elevation: 5,
                   shadowColor: Colors.grey,
+                  foregroundColor: Colors.grey, // Silver-like text
                 ),
                 child: const Text('Initiate Mission Sequence',
-                    style: TextStyle(color: Colors.black)),
+                    style: TextStyle(color: Colors.grey)), // Silver-like text
               ),
             ),
           ],
@@ -124,12 +124,12 @@ class HowItWorksScreen extends StatelessWidget {
       IconData icon, Color iconColor) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[900],
+        color: Colors.grey[900]?.withValues(alpha: 0.8), // Corrected line
         borderRadius: BorderRadius.circular(0), // Sharp edges
         border: Border.all(color: Colors.grey[800]!, width: 1), // Subtle border
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withAlpha(90),
+            color: Colors.black.withValues(alpha: 0.6),
             spreadRadius: 0.5,
             blurRadius: 2,
             offset: const Offset(1, 1),
@@ -148,16 +148,13 @@ class HowItWorksScreen extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: GoogleFonts.genos(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                  fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey), // Silver-like
             ),
             const SizedBox(height: 6),
             Text(
               description,
               textAlign: TextAlign.center,
-              style: GoogleFonts.genos(
-                  fontSize: 12, color: Colors.white),
+              style: GoogleFonts.genos(fontSize: 12, color: Colors.grey), // Silver-like
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
             ),

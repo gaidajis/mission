@@ -7,7 +7,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = const Color(0xFF2962FF);
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -29,8 +28,8 @@ class LoginScreen extends StatelessWidget {
             ),
             child: Column(
               children: <Widget>[
-                Text('Login',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
+                const Text('Login',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF607D8B))), // Matching color from main.dart
                 const SizedBox(height: 20),
                 const TextField(
                   decoration: InputDecoration(
@@ -49,7 +48,7 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
+                    backgroundColor: const Color(0xFF607D8B), // Matching color from main.dart
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

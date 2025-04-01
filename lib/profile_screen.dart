@@ -7,82 +7,110 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = const Color(0xFF2962FF);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: primaryColor,
+        backgroundColor: Colors.black87,
         title: const Text(
           'My Profile',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            const SizedBox(height: 16),
-            Text('My Profile',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
-            const SizedBox(height: 16),
-            const Text('Name: Alice Kha', style: TextStyle(fontSize: 12)),
-            const SizedBox(height: 8),
-            const Text('Email: a.alice.kha@gmailk.com', style: TextStyle(fontSize: 12)),
-            const SizedBox(height: 24),
-            Text('My Missions', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
-
-            const SizedBox(height: 12),
-            const Text('Given: 10', style: TextStyle(fontSize: 12)),
-            const SizedBox(height: 8),
-            const Text('Taken: 5', style: TextStyle(fontSize: 12)),
-            const SizedBox(height: 8),
-            const Text('Total: 15', style: TextStyle(fontSize: 12)),
-            const SizedBox(height: 24),
-            Text('Total Earnings',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
-            const SizedBox(height: 12),
-            const Text('\$500.00', style: TextStyle(fontSize: 14)),
-            const SizedBox(height: 24),
-            Text('My Calendar',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
-           const SizedBox(height: 12),
-            TableCalendar(
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2030, 3, 14),
-              focusedDay: DateTime.now(),
-               calendarBuilders: CalendarBuilders(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black87, Colors.black],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(height: 16),
+              const Text('My Profile',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 16),
+              const Text('Name: Alice Kha', style: TextStyle(fontSize: 16, color: Colors.grey)),
+              const SizedBox(height: 8),
+              const Text('Email: a.alice.kha@gmailk.com', style: TextStyle(fontSize: 16, color: Colors.grey)),
+              const SizedBox(height: 24),
+              const Text('My Missions', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 12),
+              const Text('Given: 10', style: TextStyle(fontSize: 16, color: Colors.grey)),
+              const SizedBox(height: 8),
+              const Text('Taken: 5', style: TextStyle(fontSize: 16, color: Colors.grey)),
+              const SizedBox(height: 8),
+              const Text('Total: 15', style: TextStyle(fontSize: 16, color: Colors.grey)),
+              const SizedBox(height: 24),
+              const Text('Total Earnings',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 12),
+              const Text('\$500.00', style: TextStyle(fontSize: 18, color: Colors.grey)),
+              const SizedBox(height: 24),
+              const Text('My Calendar',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 12),
+              TableCalendar(
+                firstDay: DateTime.utc(2010, 10, 16),
+                lastDay: DateTime.utc(2030, 3, 14),
+                focusedDay: DateTime.now(),
+                calendarStyle: CalendarStyle(
+                  defaultTextStyle: const TextStyle(color: Colors.grey),
+                  weekendTextStyle: const TextStyle(color: Colors.grey),
+                  outsideTextStyle: TextStyle(color: Colors.grey.shade600),
+                  todayTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  todayDecoration: BoxDecoration(
+                    color: Colors.blueGrey.withValues(alpha: (0.6 * 255).toDouble()), // Corrected line
+                    shape: BoxShape.circle,
+                  ),
+                  selectedTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  selectedDecoration: BoxDecoration(
+                    color: Colors.blueGrey,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                headerStyle: HeaderStyle(
+                  titleTextStyle: const TextStyle(color: Colors.grey, fontSize: 18, fontWeight: FontWeight.bold),
+                  formatButtonTextStyle: const TextStyle(color: Colors.grey),
+                  leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.grey),
+                  rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.grey),
+                ),
+                calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, date, events) {
                     if (date.year == 2024 && date.month == 8) {
-                      if(date.day == 10){
-                           return const Align(
+                      if (date.day == 10) {
+                        return const Align(
                           alignment: Alignment.bottomCenter,
-                          child: Text('M1'),
-                          );
-                      }else if (date.day == 15){
-                           return const Align(
+                          child: Text('M1', style: TextStyle(color: Colors.white)),
+                        );
+                      } else if (date.day == 15) {
+                        return const Align(
                           alignment: Alignment.bottomCenter,
-                          child: Text('M2'),
-                          );
-                      } else if (date.day == 22){
-                         return const Align(
+                          child: Text('M2', style: TextStyle(color: Colors.white)),
+                        );
+                      } else if (date.day == 22) {
+                        return const Align(
                           alignment: Alignment.bottomCenter,
-                          child: Text('M3'),
-                          );
+                          child: Text('M3', style: TextStyle(color: Colors.white)),
+                        );
                       }
                     }
                     return null;
                   },
                 ),
-              eventLoader: (day){
-                if (day.year == 2024 && day.month == 8) {
-                  if(day.day == 10 || day.day == 15 || day.day == 22){
-                    return ['Meeting'];
+                eventLoader: (day) {
+                  if (day.year == 2024 && day.month == 8) {
+                    if (day.day == 10 || day.day == 15 || day.day == 22) {
+                      return ['Meeting'];
+                    }
                   }
-                }
-                return [];
-              },
-            )
-          ],
+                  return [];
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

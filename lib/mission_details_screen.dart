@@ -52,52 +52,99 @@ class _MissionDetailsScreenState extends State<MissionDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = const Color(0xFF2962FF);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: primaryColor,
+        backgroundColor: Colors.black87,
         title: Text(
           'New ${widget.category} Mission',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Create a new ${widget.category} mission',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
-            const SizedBox(height: 16),
-            TextField(controller: _priceController, decoration: const InputDecoration(labelText: 'Price')),
-            const SizedBox(height: 8),
-            TextField(
-                controller: _descriptionController,
-                maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Description')),
-            const SizedBox(height: 8),
-            TextField(
-                controller: _locationController, decoration: const InputDecoration(labelText: 'Location')),
-            const SizedBox(height: 8),
-            TextField(
-                controller: _dueDateController, decoration: const InputDecoration(labelText: 'Due Date')),
-            const SizedBox(height: 8),
-            TextField(
-                controller: _criteriaController,
-                maxLines: 2,
-                decoration: const InputDecoration(labelText: 'Criteria')),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black87, Colors.black],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Create a new ${widget.category} mission',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _priceController,
+                style: const TextStyle(color: Colors.grey),
+                decoration: const InputDecoration(
+                  labelText: 'Price',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                ),
               ),
-              onPressed: _sendEmail,
-              child: const Text('Send Mission', style: TextStyle(fontSize: 14)),
-            ),
-          ],
+              const SizedBox(height: 8),
+              TextField(
+                controller: _descriptionController,
+                style: const TextStyle(color: Colors.grey),
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _locationController,
+                style: const TextStyle(color: Colors.grey),
+                decoration: const InputDecoration(
+                  labelText: 'Location',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _dueDateController,
+                style: const TextStyle(color: Colors.grey),
+                decoration: const InputDecoration(
+                  labelText: 'Due Date',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _criteriaController,
+                style: const TextStyle(color: Colors.grey),
+                maxLines: 2,
+                decoration: const InputDecoration(
+                  labelText: 'Criteria',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black54,
+                  foregroundColor: Colors.grey,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: _sendEmail,
+                child: const Text('Send Mission', style: TextStyle(fontSize: 14)),
+              ),
+            ],
+          ),
         ),
       ),
     );
