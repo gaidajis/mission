@@ -3,13 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'auth_wrapper.dart';
 
-// Main function: Entry point of the application
 void main() async {
-  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize Firebase with the default options for the current platform
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // Run the application by creating an instance of MyApp
   runApp(const MyApp());
 }
 
