@@ -1,41 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
-import 'mission_details_screen.dart'; // Ensure this screen exists and takes 'category'
-// import 'dart:developer'; // Uncomment if you want to use log() for debugging
+import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
+import 'mission_details_screen.dart';
 
-class SendOnMissionScreen extends StatelessWidget {
+class SendOnMissionScreen extends StatefulWidget {
   const SendOnMissionScreen({super.key});
 
-  // --- Moved _sendMissionToFirebase inside the class ---
+  @override
+  State<SendOnMissionScreen> createState() => _SendOnMissionScreenState();
+}
+
+class _SendOnMissionScreenState extends State<SendOnMissionScreen> {
   Future<void> _sendMissionToFirebase(
     String category,
     BuildContext context, // Context is needed for ScaffoldMessenger and Navigator
   ) async {
     try {
+      final User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        // Handle the case where the user is not logged in
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('You must be logged in to post a mission.')),
+        );
+        return;
+      }
+
       // Add the mission data to the 'missions' collection
       await FirebaseFirestore.instance.collection('missions').add({
         'category': category,
         'status': 'new', // Example: Add an initial status
         'timestamp': FieldValue.serverTimestamp(), // Use server time
-        // Add any other relevant data (e.g., userId, location)
-        // 'userId': FirebaseAuth.instance.currentUser?.uid, // Example if using Firebase Auth
+        'userId': user.uid, // Add the user ID
+        // Add any other relevant data you want to save
       });
 
       // Check if the widget is still mounted before showing SnackBar or navigating
       if (!context.mounted) return;
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Mission "$category" posted successfully!')),
-      );
-
-      // Navigate to the details screen after successful posting
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MissionDetailsScreen(category: category),
-        ),
+      // Show success dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: Text('Mission Sent!', style: GoogleFonts.genos(fontWeight: FontWeight.bold, color: Colors.grey)),
+            content: Text('Your mission "$category" has been sent.', style: const TextStyle(color: Colors.grey)),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK', style: TextStyle(color: Colors.grey)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Navigate to the details screen after successful posting
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MissionDetailsScreen(category: category),
+                    ),
+                  );
+                },
+              ),
+            ],
+          );
+        },
       );
     } catch (e) {
       // Check if the widget is still mounted before showing the error SnackBar
@@ -50,13 +77,10 @@ class SendOnMissionScreen extends StatelessWidget {
       // print('Error posting mission: $e'); // Or use print for simple debugging
     }
   }
-  // --- End of moved function ---
 
   @override
   Widget build(BuildContext context) {
-    // --- Removed Scaffold and AppBar ---
-    // The parent screen (MainAppScreen) should provide the Scaffold/AppBar
-    return Container( // Return the Container directly
+    return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -93,7 +117,7 @@ class SendOnMissionScreen extends StatelessWidget {
                   'Social',       // Shortened
                   'Animals',
                   'Repairs',
-                  'Special',      // Shortened
+                  'Special',     // Shortened
                 ].map((category) {
                   // Create a Card for each category
                   return Card(
@@ -106,7 +130,6 @@ class SendOnMissionScreen extends StatelessWidget {
                     clipBehavior: Clip.antiAlias, // Ensure InkWell ripple stays within bounds
                     child: InkWell( // Make the card tappable
                       onTap: () {
-                        // Call the function to send data when tapped
                         _sendMissionToFirebase(category, context);
                       },
                       splashColor: Colors.amber.withAlpha(50), // Customize ripple color
@@ -133,6 +156,5 @@ class SendOnMissionScreen extends StatelessWidget {
         ),
       ),
     );
-    // --- End of removed Scaffold ---
   }
 }

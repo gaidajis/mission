@@ -1,15 +1,67 @@
-// lib/profile_screen.dart
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../auth_service.dart'; // Import your AuthService
+import 'package:country_code_picker/country_code_picker.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final AuthService authService = AuthService(); // Create an instance of AuthService
+  ProfileScreenState createState() => ProfileScreenState();
+}
 
+class ProfileScreenState extends State<ProfileScreen> {
+  final AuthService authService = AuthService();
+  final _formKey = GlobalKey<FormState>();
+
+  String? _firstName;
+  String? _lastName;
+  String? _email;
+  String? _phoneNumber;
+  String? _countryCode = '+1'; // Default country code
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      //  Here you would typically fetch the user's profile data
+      //  from your database (e.g., Firestore) using the user.uid.
+      //  For this example, I'll use placeholder values.
+      setState(() {
+        _firstName = "John"; // Replace with actual data
+        _lastName = "Doe"; // Replace with actual data
+        _email = user.email;
+        _phoneNumber = "123-456-7890"; // Replace with actual data
+      });
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      //  Here you would typically save the updated profile data
+      //  to your database using the collected values (_firstName, _lastName, etc.).
+      print('Saving Profile:');
+      //  For example, if using Firestore:
+      //  await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      //    'firstName': _firstName,
+      //    'lastName': _lastName,
+      //    'phoneNumber': '$_countryCode $_phoneNumber',
+      //  });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully!')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black87,
@@ -22,8 +74,6 @@ class ProfileScreen extends StatelessWidget {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await authService.signOut();
-              // The AuthWrapper will automatically detect the user state change
-              // and navigate back to the LoginScreen.
             },
           ),
         ],
@@ -38,91 +88,145 @@ class ProfileScreen extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const SizedBox(height: 16),
-              const Text('My Profile',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 16),
-              const Text('Name: Alice Kha', style: TextStyle(fontSize: 16, color: Colors.grey)),
-              const SizedBox(height: 8),
-              const Text('Email: a.alice.kha@gmailk.com', style: TextStyle(fontSize: 16, color: Colors.grey)),
-              const SizedBox(height: 24),
-              const Text('My Missions', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 12),
-              const Text('Given: 10', style: TextStyle(fontSize: 16, color: Colors.grey)),
-              const SizedBox(height: 8),
-              const Text('Taken: 5', style: TextStyle(fontSize: 16, color: Colors.grey)),
-              const SizedBox(height: 8),
-              const Text('Total: 15', style: TextStyle(fontSize: 16, color: Colors.grey)),
-              const SizedBox(height: 24),
-              const Text('Total Earnings',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 12),
-              const Text('\$500.00', style: TextStyle(fontSize: 18, color: Colors.grey)),
-              const SizedBox(height: 24),
-              const Text('My Calendar',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 12),
-              TableCalendar(
-                firstDay: DateTime.utc(2010, 10, 16),
-                lastDay: DateTime.utc(2030, 3, 14),
-                focusedDay: DateTime.now(),
-                calendarStyle: CalendarStyle(
-                  defaultTextStyle: const TextStyle(color: Colors.grey),
-                  weekendTextStyle: const TextStyle(color: Colors.grey),
-                  outsideTextStyle: TextStyle(color: Colors.grey.shade600),
-                  todayTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                  todayDecoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    shape: BoxShape.circle,
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: <Widget>[
+                const SizedBox(height: 16),
+                const Text(
+                  'Edit Profile',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
                   ),
-                  selectedTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                  selectedDecoration: const BoxDecoration(
-                    color: Colors.blueGrey,
-                    shape: BoxShape.circle,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                TextFormField(
+                  initialValue: _firstName,
+                  decoration: const InputDecoration(
+                    labelText: 'First Name',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey),
+                    ),
                   ),
-                ),
-                headerStyle: HeaderStyle(
-                  titleTextStyle: const TextStyle(color: Colors.grey, fontSize: 18, fontWeight: FontWeight.bold),
-                  formatButtonTextStyle: const TextStyle(color: Colors.grey),
-                  leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.grey),
-                  rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.grey),
-                ),
-                calendarBuilders: CalendarBuilders(
-                  markerBuilder: (context, date, events) {
-                    if (date.year == 2024 && date.month == 8) {
-                      if (date.day == 10) {
-                        return const Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Text('M1', style: TextStyle(color: Colors.white)),
-                        );
-                      } else if (date.day == 15) {
-                        return const Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Text('M2', style: TextStyle(color: Colors.white)),
-                        );
-                      } else if (date.day == 22) {
-                        return const Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Text('M3', style: TextStyle(color: Colors.white)),
-                        );
-                      }
+                  style: const TextStyle(color: Colors.grey),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your first name';
                     }
                     return null;
                   },
+                  onSaved: (value) => _firstName = value,
                 ),
-                eventLoader: (day) {
-                  if (day.year == 2024 && day.month == 8) {
-                    if (day.day == 10 || day.day == 15 || day.day == 22) {
-                      return ['Meeting'];
+                const SizedBox(height: 16),
+                TextFormField(
+                  initialValue: _lastName,
+                  decoration: const InputDecoration(
+                    labelText: 'Last Name',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.grey),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your last name';
                     }
-                  }
-                  return [];
-                },
-              ),
-            ],
+                    return null;
+                  },
+                  onSaved: (value) => _lastName = value,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  initialValue: _email,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.grey),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Please enter a valid email address';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _email = value,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    CountryCodePicker(
+                      onChanged: (CountryCode code) {
+                        setState(() {
+                          _countryCode = code.dialCode!;
+                        });
+                      },
+                      initialSelection: 'US', //  Default country
+                      favorite: const ['US', 'CA', 'GB', 'AU'],
+                      showCountryOnly: false,
+                      showOnlyCountryWhenClosed: false,
+                      alignLeft: false,
+                      textStyle: const TextStyle(color: Colors.grey),
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        initialValue: _phoneNumber,
+                        decoration: const InputDecoration(
+                          labelText: 'Phone Number',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blueGrey),
+                          ),
+                        ),
+                        style: const TextStyle(color: Colors.grey),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your phone number';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) => _phoneNumber = value,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  onPressed: _saveProfile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueGrey,
+                  ),
+                  child: const Text(
+                    'Save Profile',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
