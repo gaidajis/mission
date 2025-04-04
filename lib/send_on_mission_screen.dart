@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
+import 'package:firebase_database/firebase_database.dart';
 import 'mission_details_screen.dart';
 
 class SendOnMissionScreen extends StatefulWidget {
@@ -26,13 +26,15 @@ class _SendOnMissionScreenState extends State<SendOnMissionScreen> {
         return;
       }
 
-      // Add the mission data to the 'missions' collection
-      await FirebaseFirestore.instance.collection('missions').add({
-        'category': category,
-        'status': 'new', // Example: Add an initial status
-        'timestamp': FieldValue.serverTimestamp(), // Use server time
-        'userId': user.uid, // Add the user ID
-        // Add any other relevant data you want to save
+      final DatabaseReference missionsRef = FirebaseDatabase.instance.ref('missions');
+      final newMissionRef = missionsRef.push();
+
+      await newMissionRef.set({
+        'category': category, // Use the category argument
+        'status': 'new',      // Set a default status
+        'timestamp': ServerValue.timestamp, // Use server timestamp
+        'userId': user.uid,   // Associate the mission with the user
+        // Add any other relevant data here
       });
 
       // Check if the widget is still mounted before showing SnackBar or navigating
