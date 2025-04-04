@@ -1,21 +1,44 @@
-// lib/send_on_mission_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'mission_details_screen.dart'; // Ensure this import is correct based on your file structure
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'mission_details_screen.dart';
 
 class SendOnMissionScreen extends StatelessWidget {
   const SendOnMissionScreen({super.key});
 
+  Future<void> _sendMissionToFirebase(
+    String category,
+    BuildContext context,
+  ) async {
+    try {
+      await FirebaseFirestore.instance.collection('missions').add({
+        'category': category,
+        'timestamp': FieldValue.serverTimestamp(),
+        // Add any other relevant data you want to store (location, user info, etc.)
+      });
+      // Optionally, show a success message or navigate to another screen
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Mission "$category" posted successfully!')),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MissionDetailsScreen(category: category),
+        ),
+      );
+    } catch (e) {
+      // Handle errors (e.g., show an error message)
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to post mission: $e')));
+      print('Error sending mission: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black87,
-        title: const Text(
-          'Send on Mission',
-          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
-        ),
-      ),
+      appBar: AppBar(backgroundColor: Colors.black87),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -29,8 +52,14 @@ class SendOnMissionScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Send on Mission',
-                  style: GoogleFonts.genos(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey)),
+              Text(
+                'Send on Mission',
+                style: GoogleFonts.genos(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ),
               const SizedBox(height: 16),
               Expanded(
                 child: GridView.count(
@@ -38,41 +67,42 @@ class SendOnMissionScreen extends StatelessWidget {
                   childAspectRatio: 2 / 1,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  children: <String>[
-                    'Errands',
-                    'Transportation Delivery',
-                    'Food',
-                    'SocialInteraction',
-                    'Animals',
-                    'SpecialMissions',
-                    'Repairs',
-                  ].map((category) {
-                    return Card(
-                      elevation: 3,
-                      color: Colors.grey[850],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MissionDetailsScreen(category: category)),
-                          );
-                        },
-                        child: Center(
-                          child: Text(
-                            category,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.genos(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+                  children:
+                      <String>[
+                        'Errands',
+                        'Transportation Delivery',
+                        'Food',
+                        'SocialInteraction',
+                        'Animals',
+                        'SpecialMissions',
+                        'Repairs',
+                      ].map((category) {
+                        return Card(
+                          elevation: 3,
+                          color: Colors.grey[850],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                          child: InkWell(
+                            onTap: () {
+                              _sendMissionToFirebase(category, context);
+                            },
+                            child: Center(
+                              child: Text(
+                                category,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.genos(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                 ),
-              )
+              ),
             ],
           ),
         ),

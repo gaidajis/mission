@@ -1,125 +1,112 @@
-// lib/screens/home_screen.dart
+// lib/home_screen.dart
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login_screen.dart';
+import 'profile_screen.dart';
+import 'send_on_mission_screen.dart';
+import 'mission_details_screen.dart';
+import 'choose_mission_screen.dart';
+import 'contact_screen.dart';
+import 'how_it_works_screen.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          final User? user = snapshot.data;
+          if (user == null) {
+            // User is not logged in, navigate to the login screen
+            return const LoginScreen();
+          } else {
+            // User is logged in, navigate to the home screen
+            return const MainAppScreen(); // Replace with your actual home screen
+          }
+        }
+
+        // While checking the authentication state, you might want to show a loading indicator
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class MainAppScreen extends StatefulWidget {
+  const MainAppScreen({super.key});
+
+  @override
+  MainAppScreenState createState() => MainAppScreenState();
+}
+
+class MainAppScreenState extends State<MainAppScreen> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _screens = [
+    ProfileScreen(), // Removed const
+    SendOnMissionScreen(), // Removed const
+    MissionDetailsScreen(category: 'dummy'), // Removed const and added required parameter
+    ChooseMissionScreen(), // Removed const
+    ContactScreen(), // Removed const
+    HowItWorksScreen() // Removed const
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black87,
-        title: Text(
-          'Home',
-          style: GoogleFonts.genos(
-              color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 24),
-        ),
+        title: const Text('Mission App'),
+        backgroundColor: const Color(0xFF607D8B), // Custom app bar color
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.black87, Colors.black],
+      body: Center(
+        child: _screens.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person), // Profile icon
+            label: 'Profile',
           ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[900]?.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(                      
-                      color: Colors.black.withValues(alpha: 0.6),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      'About The Mission',
-                      style: GoogleFonts.genos(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey, // Silver-like
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      "The Mission is a platform that allows you to give tasks in minutes. It connects people from all over the world. It provides work for people quickly. It's a better guarantee for users than classified ads websites.",
-                      style: TextStyle(fontSize: 18, color: Colors.grey), // Silver-like
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: <Widget>[
-                        const Icon(Icons.rocket_launch, color: Colors.grey), // Silver-like
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Imagine the Possibilities',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.grey), // Silver-like
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const <Widget>[
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.0),
-                          child: Text("• Need help with tasks?", style: TextStyle(fontSize: 18, color: Colors.grey)), // Silver-like
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.0),
-                          child: Text("• Want personalized services?", style: TextStyle(fontSize: 18, color: Colors.grey)), // Silver-like
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.0),
-                          child: Text("• Need help with pets?", style: TextStyle(fontSize: 18, color: Colors.grey)), // Silver-like
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.0),
-                          child: Text("• Want verified profiles?", style: TextStyle(fontSize: 14, color: Colors.grey)), // Silver-like
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black54,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        foregroundColor: Colors.grey, // Silver-like text
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Explore Missions', style: TextStyle(color: Colors.grey)), // Silver-like
-                          Icon(Icons.explore, color: Colors.grey), // Silver-like
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
+          BottomNavigationBarItem(
+            icon: Icon(Icons.send),
+            label: 'Send on Mission',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment),
+            label: 'Mission Details',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.rocket_launch),
+            label: 'Choose Mission',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.mail),
+            label: 'Contact',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.help_outline),
+            label: 'How it works',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color(0xFF607D8B), // Custom selected color
+        unselectedItemColor: Colors.grey[600],
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

@@ -1,12 +1,15 @@
 // lib/profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../auth_service.dart'; // Import your AuthService
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final AuthService authService = AuthService(); // Create an instance of AuthService
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black87,
@@ -14,6 +17,16 @@ class ProfileScreen extends StatelessWidget {
           'My Profile',
           style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await authService.signOut();
+              // The AuthWrapper will automatically detect the user state change
+              // and navigate back to the LoginScreen.
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -62,11 +75,11 @@ class ProfileScreen extends StatelessWidget {
                   outsideTextStyle: TextStyle(color: Colors.grey.shade600),
                   todayTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                   todayDecoration: BoxDecoration(
-                    color: Colors.blueGrey.withValues(alpha: (0.6 * 255).toDouble()), // Corrected line
+                    color: Colors.blueGrey,
                     shape: BoxShape.circle,
                   ),
                   selectedTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                  selectedDecoration: BoxDecoration(
+                  selectedDecoration: const BoxDecoration(
                     color: Colors.blueGrey,
                     shape: BoxShape.circle,
                   ),
