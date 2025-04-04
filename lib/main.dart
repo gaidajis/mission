@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'firebase_options.dart'; // Make sure this file exists and is configured
 import 'package:google_fonts/google_fonts.dart';
 import 'auth_wrapper.dart';
 import 'home_screen.dart';
@@ -13,7 +13,7 @@ import 'login_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 // MyApp widget: Represents the root of the application
@@ -25,59 +25,70 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Disable the debug banner
       title: 'The Mission', // Set the application title
-      home: const HomeScreen(), // Set MyHomePage as the home screen
+      home: const AuthWrapper(), // Set AuthWrapper as the home screen
+      // Consider adding routes here if you navigate to MainAppScreen from AuthWrapper
+      // routes: {
+      //   '/main': (context) => const MainAppScreen(),
+      // },
     );
   }
 }
 
-// MyHomePage widget: Represents the main screen of the application
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+/*
+MainAppScreen: This widget represents the main screen after potentially logging in,
+containing the Scaffold, AppBar, Drawer, and main content area.
+*/
+class MainAppScreen extends StatefulWidget {
+  const MainAppScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  MainAppScreenState createState() => MainAppScreenState();
 }
 
 /*
-_MyHomePageState: This class manages the state of the MyHomePage widget.
+MainAppScreenState: Manages the state for MainAppScreen.
 It includes:
-- _selectedIndex: An integer to keep track of the currently selected drawer item.
-- _widgetOptions: A list of widgets corresponding to different screens of the application.
+- _selectedIndex: Tracks the currently selected drawer item index.
+- _widgetOptions: A list of Widgets corresponding to each screen accessible from the drawer.
 */
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+class MainAppScreenState extends State<MainAppScreen> {
+  int _selectedIndex = 0; // Default to the first item (HomeScreen)
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    HowItWorksScreen(),
-    SendOnMissionScreen(),
-    ChooseMissionScreen(),
-    LoginScreen(),
-    ContactScreen(), // Corrected typo here
+  // List of widgets to display based on drawer selection
+  static final List<Widget> _widgetOptions = <Widget>[
+    const HomeScreen(),         // Index 0
+    const HowItWorksScreen(),   // Index 1
+    const SendOnMissionScreen(),// Index 2
+    const ChooseMissionScreen(),// Index 3
+    const ContactScreen(),      // Index 4
+    const LoginScreen(),        // Index 5 - Note: Often login is handled before this screen
   ];
 
-  void _onDrawerItemTapped(int index) {
-    if (_selectedIndex == index)
-      return; // If the tapped item is already selected, do nothing
+  // Method called when a drawer item is tapped
+  void _onItemTapped(int index) {
+    // Optional: Prevent navigating to the same screen again
+    // if (_selectedIndex == index) {
+    //   Navigator.pop(context); // Close the drawer even if it's the same index
+    //   return;
+    // }
 
     setState(() {
-      _selectedIndex = index; // Update the selected index
+      _selectedIndex = index; // Update the state with the new index
     });
-    Navigator.pop(context); // Close the drawer
+    Navigator.pop(context); // Close the drawer after selection
   }
 
-  //Build method to create the UI for the main screen
+  // Build method to create the UI for the main screen
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black87,
         title: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min, // Keep Row tight around children
           children: [
-            // Add some spacing
-            const SizedBox(width: 9),
-            const SizedBox(width: 9),
+            // Consider adding an icon here if desired, e.g., Image.asset('assets/images/m7.jpeg', height: 30)
+            const SizedBox(width: 8), // Adjust spacing as needed
             Text(
               'The Mission',
               style: GoogleFonts.genos(
@@ -90,30 +101,30 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         centerTitle: true,
         iconTheme: const IconThemeData(
-          color: Colors.amber,
-          size: 30, // Size of the navigation icon
+          color: Colors.amber, // Drawer icon color
+          size: 30,           // Size of the drawer icon
         ),
       ),
       drawer: Drawer(
-        // Drawer for navigation
         backgroundColor: const Color.fromARGB(221, 0, 0, 0),
         child: ListView(
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.zero, // Remove default padding from ListView
           children: [
-            //DrawerHeader displays the app logo and name
+            // DrawerHeader displays the app logo and name
             DrawerHeader(
               padding: const EdgeInsets.only(
                 left: 16.0,
                 bottom: 16.0,
-                top: 40.0,
+                top: 40.0, // Adjust top padding if needed below status bar
               ),
               decoration: const BoxDecoration(
-                color: Color.fromARGB(133, 0, 0, 0),
+                color: Color.fromARGB(133, 0, 0, 0), // Semi-transparent black
               ),
               child: Align(
                 alignment: Alignment.bottomLeft,
                 child: Row(
                   children: [
+                    // Ensure the asset path is correct and included in pubspec.yaml
                     Image.asset('assets/images/m7.jpeg', height: 30, width: 30),
                     const SizedBox(width: 8),
                     Text(
@@ -128,154 +139,113 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            //ListTile for Home
+            // ListTile for Home
             ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
-              leading: Icon(
-                Icons.home,
-                color: _selectedIndex == 0 ? Colors.blueGrey[300] : Colors.grey,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: const Icon(Icons.home, color: Colors.grey),
               title: Text(
                 'Home',
                 style: TextStyle(
-                  color:
-                      _selectedIndex == 0 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 0 ? Colors.blueGrey[300] : Colors.grey,
                 ),
               ),
               selected: _selectedIndex == 0,
-              selectedTileColor: Colors.black54,
-              onTap: () => _onDrawerItemTapped(0),
+              selectedTileColor: Colors.black54, // Background color when selected
+              onTap: () => _onItemTapped(0),
             ),
-            //Divider to separate drawer items
             const Divider(indent: 16.0, endIndent: 16.0, color: Colors.grey),
             // ListTile for How it works
             ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
-              leading: Icon(
-                Icons.info_outline,
-                color: _selectedIndex == 1 ? Colors.blueGrey[300] : Colors.grey,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: const Icon(Icons.info_outline, color: Colors.grey),
               title: Text(
                 'How it works',
                 style: TextStyle(
-                  color:
-                      _selectedIndex == 1 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 1 ? Colors.blueGrey[300] : Colors.grey,
                 ),
               ),
-              selectedTileColor: Colors.black54,
               selected: _selectedIndex == 1,
-              onTap: () => _onDrawerItemTapped(1),
+              selectedTileColor: Colors.black54,
+              onTap: () => _onItemTapped(1),
             ),
-            //Divider to separate drawer items
             const Divider(indent: 16.0, endIndent: 16.0, color: Colors.grey),
-            //ListTile for Send on Mission
+            // ListTile for Send on Mission
             ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
-              leading: Icon(
-                Icons.send,
-                color: _selectedIndex == 2 ? Colors.blueGrey[300] : Colors.grey,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: const Icon(Icons.send, color: Colors.grey),
               title: Text(
                 'Send on Mission',
                 style: TextStyle(
-                  color:
-                      _selectedIndex == 2 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 2 ? Colors.blueGrey[300] : Colors.grey,
                 ),
               ),
-              selectedTileColor: Colors.black54,
               selected: _selectedIndex == 2,
-              onTap: () => _onDrawerItemTapped(2),
+              selectedTileColor: Colors.black54,
+              onTap: () => _onItemTapped(2),
             ),
-            //Divider to separate drawer items
             const Divider(indent: 16.0, endIndent: 16.0, color: Colors.grey),
-            //ListTile for Choose your mission
+            // ListTile for Choose your mission
             ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
-              leading: Icon(
-                Icons.search,
-                color: _selectedIndex == 3 ? Colors.blueGrey[300] : Colors.grey,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: const Icon(Icons.search, color: Colors.grey),
               title: Text(
                 'Choose your mission',
                 style: TextStyle(
-                  color:
-                      _selectedIndex == 3 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 3 ? Colors.blueGrey[300] : Colors.grey,
                 ),
               ),
-              selectedTileColor: Colors.black54,
               selected: _selectedIndex == 3,
-              onTap: () => _onDrawerItemTapped(3),
+              selectedTileColor: Colors.black54,
+              onTap: () => _onItemTapped(3),
             ),
-            //Divider to separate drawer items
             const Divider(indent: 16.0, endIndent: 16.0, color: Colors.grey),
-            //ListTile for Contact
+            // ListTile for Contact
             ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
-              leading: Icon(
-                Icons.phone,
-                color: _selectedIndex == 4 ? Colors.blueGrey[300] : Colors.grey,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: const Icon(Icons.phone, color: Colors.grey),
               title: Text(
                 'Contact',
                 style: TextStyle(
-                  color:
-                      _selectedIndex == 4 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 4 ? Colors.blueGrey[300] : Colors.grey,
                 ),
               ),
-              selectedTileColor: Colors.black54,
               selected: _selectedIndex == 4,
-              onTap: () => _onDrawerItemTapped(4),
+              selectedTileColor: Colors.black54,
+              // *** FIXED: Changed index from 5 to 4 ***
+              onTap: () => _onItemTapped(4),
             ),
-            //Divider to separate drawer items
             const Divider(indent: 16.0, endIndent: 16.0, color: Colors.grey),
-            //ListTile for Login
+            // ListTile for Login
             ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
-              leading: Icon(
-                Icons.account_circle,
-                color: _selectedIndex == 5 ? Colors.blueGrey[300] : Colors.grey,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: const Icon(Icons.account_circle, color: Colors.grey),
               title: Text(
                 'Login',
                 style: TextStyle(
-                  color:
-                      _selectedIndex == 5 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 5 ? Colors.blueGrey[300] : Colors.grey,
                 ),
               ),
-              selectedTileColor: Colors.black54,
               selected: _selectedIndex == 5,
-              onTap: () => _onDrawerItemTapped(5),
+              selectedTileColor: Colors.black54,
+              // *** FIXED: Changed index from 4 to 5 ***
+              onTap: () => _onItemTapped(5),
             ),
           ],
         ),
       ),
       body: Container(
+        // Apply background gradient to the body
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.black87, Colors.black],
+            colors: [Colors.black87, Colors.black], // Gradient from dark grey to black
           ),
-        ), // Centers the selected widget
-        child: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+        ),
+        // Display the widget selected via the drawer
+        child: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
       ),
     );
   }
