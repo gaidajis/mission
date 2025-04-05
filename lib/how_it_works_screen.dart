@@ -1,19 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'send_on_mission_screen.dart';
+import 'send_on_mission_screen.dart'; // Assuming this screen exists
 
 class HowItWorksScreen extends StatelessWidget {
   const HowItWorksScreen({super.key});
 
+  // Define the steps data to avoid repetition
+  final List<Map<String, dynamic>> _steps = const [
+    {
+      'icon': Icons.edit_location,
+      'title': '1. Describe Your Need',
+      'description':
+          'Clearly define what you need - from local food in Japan to a virtual tour in Greece.',
+    },
+    {
+      'icon': Icons.category,
+      'title': '2. Specify the Service',
+      'description':
+          'Choose a category: Social, Transportation, Delivery, Goods, Social Animals, Repairs, or Special Requests.',
+    },
+    {
+      'icon': Icons.settings,
+      'title': '3. Set Your Terms',
+      'description':
+          'Indicate your budget, desired timeframe, and any specific instructions.',
+    },
+    {
+      'icon': Icons.public,
+      'title': '4. Connect Globally',
+      'description':
+          'Your mission is broadcast to a worldwide network of potential helpers.',
+    },
+    {
+      'icon': Icons.assignment_turned_in,
+      'title': '5. Receive Offers',
+      'description':
+          'Interested users will submit their applications to fulfill your mission.',
+    },
+    {
+      'icon': Icons.person_search,
+      'title': '6. Select Your Helper',
+      'description':
+          'Review applications, check profiles, and choose the best person for the task.',
+    },
+    {
+      'icon': Icons.chat_bubble_outline,
+      'title': '7. Mission in Progress',
+      'description':
+          'Communicate directly with your chosen helper to coordinate the task.',
+    },
+    {
+      'icon': Icons.check_circle_outline,
+      'title': '8. Mission Accomplished',
+      'description':
+          'Once the mission is completed to your satisfaction, approve and the helper gets paid.',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
-    const Color iconColor = Colors.grey;
+    const Color textColor = Colors.grey; // Consistent text color
+    const Color iconColor = Colors.grey; // Consistent icon color
+    const Color cardBackgroundColor = Color(0xFF2A2A2A); // Slightly lighter than pure black
+    const Color borderColor = Color(0xFF424242); // Subtle border color
+
     return Scaffold(
       appBar: AppBar(
+        // Kept AppBar styling as it wasn't explicitly mentioned as problematic
         backgroundColor: Colors.black87,
         title: Text(
-          'How it works',
-          style: GoogleFonts.genos(color: Colors.grey),
+          'How The Mission Works',
+          style: TextStyle(color: textColor),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -24,6 +81,7 @@ class HowItWorksScreen extends StatelessWidget {
             ),
           ),
         ),
+        iconTheme: const IconThemeData(color: textColor), // Ensure back arrow is visible
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -33,130 +91,146 @@ class HowItWorksScreen extends StatelessWidget {
             end: Alignment.bottomCenter,
           ),
         ),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const SizedBox(height: 24),
-            Center(
-              child: Text(
-                'The mission is global!',
-                style: GoogleFonts.genos(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey, // Silver-like
+        // Use SafeArea to avoid OS intrusions (notch, status bar, navigation bar)
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+                child: Text(
+                  'Unleash the Power of Global Connection',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22, // Slightly larger for emphasis
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ), // Changed to TextStyle
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                childAspectRatio: 1.5,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                physics: const NeverScrollableScrollPhysics(), // To disable grid scrolling
-                children: <Widget>[
-                  _buildStepCard(
-                    context,
-                    'Post a Mission',
-                    'Post a mission with price and description.',
-                    Icons.public,
-                    iconColor,
-                  ),
-                  _buildStepCard(
-                    context,
-                    'Get Applications',
-                    'Verified users apply to your mission.',
-                    Icons.assignment_turned_in,
-                    iconColor,
-                  ),
-                  _buildStepCard(
-                    context,
-                    'Choose a Helper',
-                    'Review and choose the best person.',
-                    Icons.person_search,
-                    iconColor,
-                  ),
-                  _buildStepCard(
-                    context,
-                    'Mission Completed',
-                    'Approve completion, helper gets paid.',
-                    Icons.check_circle_outline,
-                    iconColor,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SendOnMissionScreen()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black54, // Dark button
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  textStyle: const TextStyle(fontSize: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0), // Sharp edges
-                  ),
-                  elevation: 5,
-                  shadowColor: Colors.grey,
-                  foregroundColor: Colors.grey, // Silver-like text
+              // Use Expanded with ListView for scrollable steps
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  itemCount: _steps.length,
+                  itemBuilder: (context, index) {
+                    final step = _steps[index];
+                    // Use ListTile for a standard, well-structured layout
+                    return _buildStepTile(
+                      context: context,
+                      icon: step['icon'] as IconData,
+                      title: step['title'] as String,
+                      description: step['description'] as String,
+                      iconColor: iconColor,
+                      textColor: textColor,
+                      backgroundColor: cardBackgroundColor,
+                      borderColor: borderColor,
+                      isFirst: index == 0,
+                      isLast: index == _steps.length - 1,
+                    );
+                  },
                 ),
-                child: const Text('Initiate Mission Sequence',
-                    style: TextStyle(color: Colors.grey)), // Silver-like text
               ),
-            ),
-          ],
+              // Keep the button outside the scrollable list
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SendOnMissionScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF333333), // Darker grey button
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                    textStyle: GoogleFonts.genos(fontSize: 18, fontWeight: FontWeight.w600),
+                    // Removed GoogleFonts here.
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: borderColor) // Subtle border matching cards
+                    ),
+                    elevation: 3,
+                    shadowColor: Colors.black,
+                    foregroundColor: textColor, // Text color
+                  ),
+                  child: const Text('Initiate Your Mission'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildStepCard(BuildContext context, String title, String description,
-      IconData icon, Color iconColor) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[900]?.withValues(alpha: 0.8), // Corrected line
-        borderRadius: BorderRadius.circular(0), // Sharp edges
-        border: Border.all(color: Colors.grey[800]!, width: 1), // Subtle border
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.6),
-            spreadRadius: 0.5,
-            blurRadius: 2,
-            offset: const Offset(1, 1),
-          ),
-        ],
+  // Using ListTile for better structure and accessibility
+  Widget _buildStepTile({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String description,
+    required Color iconColor,
+    required Color textColor,
+    required Color backgroundColor,
+    required Color borderColor,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    // Define corner radius for the cards
+    const Radius cardRadius = Radius.circular(8.0);
+    // Define shape based on position in the list
+    final ShapeBorder cardShape = RoundedRectangleBorder(
+      side: BorderSide(color: borderColor, width: 1),
+      borderRadius: BorderRadius.vertical(
+        top: isFirst ? cardRadius : Radius.zero,
+        bottom: isLast ? cardRadius : Radius.zero,
       ),
+    );
+
+    return Card(
+      // Remove default Card margin to control spacing precisely with Padding
+      margin: EdgeInsets.only(bottom: isLast ? 0 : 1.5), // Tiny space between cards
+      color: backgroundColor,
+      shape: cardShape,
+      elevation: 1.0, // Subtle elevation
+      shadowColor: Colors.black,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start, // Align items to the top
           children: [
-            Icon(icon, size: 32, color: iconColor),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.genos(
-                  fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey), // Silver-like
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0, top: 2.0), // Space icon from text
+              child: Icon(icon, size: 30, color: iconColor),
             ),
-            const SizedBox(height: 6),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.genos(fontSize: 12, color: Colors.grey), // Silver-like
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+            // Use Expanded to allow text to take remaining space and wrap
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // Align text left
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.genos(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ), // Changed to TextStyle
+                  ),
+                  const SizedBox(height: 6),
+                  Text( // Changed to TextStyle
+                    description,
+                    style: GoogleFonts.genos(
+                      fontSize: 14, // Clearer description font size
+                      color: textColor, // Slightly lighter description
+                      height: 1.3 // Improve line spacing for readability
+                    ),
+                    // Removed maxLines and ellipsis to show full text,
+                    // relies on ListView scrolling and Expanded to handle height. // Changed to TextStyle
+                  ),
+                ],
+              ),
             ),
           ],
         ),
