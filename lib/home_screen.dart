@@ -2,47 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'login_screen.dart';
 import 'send_on_mission_screen.dart';
 import 'choose_mission_screen.dart';
 import 'contact_screen.dart';
 import 'how_it_works_screen.dart';
+import 'profile_screen.dart'; // Assuming you have this file
 
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
-          final User? user = snapshot.data;
-          if (user == null) {
-            // User is not logged in, navigate to the login screen
-            return const LoginScreen();
-          } else {
-            // User is logged in, navigate to the home screen
-            return const MainAppScreen(); // Replace with your actual home screen
-          }
-        }
-
-        // While checking the authentication state, you might want to show a loading indicator
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
-    );
-  }
-}
-
-/*
-MainAppScreen: This widget represents the main screen after potentially logging in,
-containing the Scaffold, AppBar, Drawer, and main content area.
-*/
 class MainAppScreen extends StatefulWidget {
   const MainAppScreen({super.key});
 
@@ -50,20 +15,14 @@ class MainAppScreen extends StatefulWidget {
   MainAppScreenState createState() => MainAppScreenState();
 }
 
-/*
-MainAppScreenState: Manages the state for MainAppScreen.
-It includes:
-- _selectedIndex: Tracks the currently selected drawer item index.
-- _widgetOptions: A list of Widgets corresponding to each screen accessible from the drawer.
-*/
 class MainAppScreenState extends State<MainAppScreen> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
     // Replace this with the actual content of your "Home" screen
-    Center(
+    const Center(
       child: Text(
-        'Home Screen Content',
+        'Your Actual Home Screen Content Here',
         style: TextStyle(fontSize: 24),
       ),
     ),
@@ -71,7 +30,8 @@ class MainAppScreenState extends State<MainAppScreen> {
     const SendOnMissionScreen(),
     const ChooseMissionScreen(),
     const ContactScreen(),
-    const LoginScreen(), // Consider if Login should be here for logged-in users
+    // const LoginScreen(), // Removed LoginScreen from drawer options
+    const ProfileScreen(), // Profile is now in the drawer (and potentially AppBar)
   ];
 
   void _onItemTapped(int index) {
@@ -105,6 +65,18 @@ class MainAppScreenState extends State<MainAppScreen> {
           color: Colors.amber,
           size: 30,
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.account_circle, color: Colors.white),
+            onPressed: () {
+              setState(() {
+                _selectedIndex = _widgetOptions.indexOf(const ProfileScreen()); // Find the index of ProfileScreen
+              });
+              // No need to pop the drawer here as it wasn't opened
+            },
+          ),
+          const SizedBox(width: 10),
+        ],
       ),
       drawer: Drawer(
         backgroundColor: const Color.fromARGB(221, 0, 0, 0),
@@ -120,7 +92,7 @@ class MainAppScreenState extends State<MainAppScreen> {
                 alignment: Alignment.bottomLeft,
                 child: Row(
                   children: [
-                    Image.asset('assets/images/m7.jpeg', height: 30, width: 30),
+                    //Image.asset('assets/images/m7.jpeg', height: 60, width: 60),
                     const SizedBox(width: 8),
                     Text(
                       'The Mission',
@@ -208,14 +180,31 @@ class MainAppScreenState extends State<MainAppScreen> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               leading: const Icon(Icons.account_circle, color: Colors.grey),
               title: Text(
-                'Login',
+                'Profile',
                 style: TextStyle(
-                  color: _selectedIndex == 5 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 5 ? Colors.blueGrey[300] : Colors.grey, // Profile is now at index 5
                 ),
               ),
-              selected: _selectedIndex == 5,
+              selected: _selectedIndex == 5, // Profile is now at index 5
               selectedTileColor: Colors.black54,
-              onTap: () => _onItemTapped(5),
+              onTap: () => _onItemTapped(5), // Profile is now at index 5
+            ),
+            const Divider(indent: 16.0, endIndent: 16.0, color: Colors.grey),
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: const Icon(Icons.logout, color: Colors.grey),
+              title: Text(
+                'Logout',
+                style: TextStyle(
+                  color: _selectedIndex == 6 ? Colors.blueGrey[300] : Colors.grey, // Logout is now at index 6
+                ),
+              ),
+              selected: _selectedIndex == 6, // Logout is now at index 6
+              selectedTileColor: Colors.black54,
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                // The HomeScreen StreamBuilder will automatically navigate to LoginScreen
+              },
             ),
           ],
         ),

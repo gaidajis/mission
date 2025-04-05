@@ -1,8 +1,8 @@
 // lib/auth_wrapper.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'login_screen.dart'; // Import your login screen
-import 'home_screen.dart'; // Import your main app screen (replace with your actual screen)
+import 'package:mission/login_screen.dart';
+import 'package:mission/home_screen.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
@@ -19,7 +19,7 @@ class AuthWrapper extends StatelessWidget {
             return const LoginScreen();
           } else {
             // User is logged in, navigate to the home screen
-            return const HomeScreen(); // Replace with your actual home screen
+            return const MainAppScreen();
           }
         }
 
