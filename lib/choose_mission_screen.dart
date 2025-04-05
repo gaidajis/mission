@@ -49,11 +49,6 @@ class ChooseMissionScreen extends StatefulWidget {
 class ChooseMissionScreenState extends State<ChooseMissionScreen> {
   Mission? selectedMission;
 
-  void _selectMission(Mission mission) {
-    setState(() {
-      selectedMission = mission;
-    });
-  }
 
   void _acceptMission() {
     if (selectedMission != null) {
@@ -148,14 +143,22 @@ class ChooseMissionScreenState extends State<ChooseMissionScreen> {
                       itemCount: missions.length,
                       itemBuilder: (context, index) {
                         final mission = missions[index];
-                        return ListTile(
-                          tileColor: selectedMission?.missionId == mission.missionId ? Colors.grey[800] : null,
-                          selectedTileColor: Colors.grey[800],
-                          title: Text(mission.category, style: GoogleFonts.genos(color: Colors.grey)),
-                          subtitle: Text('${mission.locationDescription}, ${mission.description}',
-                              style: GoogleFonts.genos(color: Colors.grey.shade600)),
-                          onTap: () => _selectMission(mission),
-                          selected: selectedMission?.missionId == mission.missionId,
+                        //print('Mission at index $index: Category - ${mission.category}, Description - ${mission.description}');
+                        return Card(
+                          margin: const EdgeInsets.all(8.0),
+                          color: Colors.grey[800],
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(mission.category, style: GoogleFonts.genos(color: Colors.grey, fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 5),
+                                Text(mission.description, style: GoogleFonts.genos(color: Colors.grey.shade600)),
+                                // You can add more mission details here if needed
+                              ],
+                            ),
+                          ),
                         );
                       },
                     );
