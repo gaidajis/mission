@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -47,7 +47,7 @@ class AuthService {
 
 // Example usage in a Flutter widget:
 
-class SignUpScreen extends StatefulWidget {  
+/* class SignUpScreen extends StatefulWidget {  
   const SignUpScreen({super.key});
   @override
   SignUpScreenState createState() => SignUpScreenState();
@@ -59,4 +59,4 @@ class SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return const Placeholder();
   }
-}
+} */

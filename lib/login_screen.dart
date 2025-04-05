@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mission/home_screen.dart';
 import '../auth_service.dart'; // Make sure this path is correct
+import 'create_account_screen.dart'; // Adjust the import according to your project structure
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -157,6 +158,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), // Adjusted style
                   ),
+                  // Add option to create an account the screen name is create_account_screen.dart
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                      );
+                    },
+                    child: const Text(
+                      'Create an account',
+                      style: TextStyle(color: Colors.amber), // Accent color for text
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -167,3 +182,4 @@ class _LoginScreenState extends State<LoginScreen> {
     // --- End of Scaffold ---
   }
 }
+
