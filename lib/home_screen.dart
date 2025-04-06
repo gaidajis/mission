@@ -65,18 +65,7 @@ class MainAppScreenState extends State<MainAppScreen> {
           color: Colors.amber,
           size: 30,
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.white),
-            onPressed: () {
-              setState(() {
-                _selectedIndex = _widgetOptions.indexOf(const ProfileScreen()); // Find the index of ProfileScreen
-              });
-              // No need to pop the drawer here as it wasn't opened
-            },
-          ),
-          const SizedBox(width: 10),
-        ],
+        actions: const <Widget>[],
       ),
       drawer: Drawer(
         backgroundColor: const Color.fromARGB(221, 0, 0, 0),
