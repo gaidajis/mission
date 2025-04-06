@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import '../auth_service.dart'; // Assuming path is correct
 import 'mission_details_screen.dart'; // Ensure this screen exists and accepts missionId
 import 'dart:developer'; // For logging
 
@@ -17,7 +16,6 @@ class ProfileScreen extends StatefulWidget {
 class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
   // --- State Variables ---
   late TabController _tabController;
-  final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   User? _currentUser;
   bool _isLoadingProfile = true; // Loading indicator for profile data
@@ -143,11 +141,11 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
         );
       }
     } catch (e) {
-      log("Error saving profile: $e");
+      log("Error saving profile: $e");      
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error saving profile: $e"), backgroundColor: Colors.red),
-        );
+         ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error saving profile: $e"), backgroundColor: Colors.red),
+         );
       }
     } finally {
       if (mounted) {
@@ -296,7 +294,7 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                 backgroundColor: Colors.amberAccent,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                disabledBackgroundColor: Colors.amberAccent.withOpacity(0.5),
+                disabledBackgroundColor: Colors.amberAccent,
               ),
             ),
              const SizedBox(height: 40),
@@ -305,10 +303,12 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                   icon: const Icon(Icons.logout, color: Colors.redAccent, size: 18),
                   label: const Text('Sign Out', style: TextStyle(color: Colors.redAccent)),
                   onPressed: () async {
-                        await _authService.signOut();
-                        // Navigation should be handled by the auth state listener wrapper
-                  },
-             ),
+                        await FirebaseAuth.instance.signOut();
+                        if(mounted){
+                           Navigator.pushReplacementNamed(context, '/login');
+                        }
+                        
+                  },),
           ],
         ),
       ),
@@ -400,7 +400,7 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                color: cardColor,
                shape: RoundedRectangleBorder(
                  borderRadius: BorderRadius.circular(8),
-                 side: BorderSide(color: borderColor.withOpacity(0.7), width: 0.5),
+                 side: BorderSide(color: borderColor, width: 0.5),
                ),
                child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -413,7 +413,7 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                   ),
                  subtitle: Text(
                     '$location\nStatus: $status',
-                    style: TextStyle(color: textColor.withOpacity(0.8), fontSize: 12, height: 1.3),
+                    style: TextStyle(color: textColor, fontSize: 12, height: 1.3),
                     maxLines: 2,
                      overflow: TextOverflow.ellipsis,
                  ),

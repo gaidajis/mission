@@ -112,7 +112,7 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Home',
                 style: TextStyle(
-                  color: _selectedIndex == 0 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 0 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
               selected: _selectedIndex == 0,
@@ -126,7 +126,7 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'How it works',
                 style: TextStyle(
-                  color: _selectedIndex == 1 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 1 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
               selected: _selectedIndex == 1,
@@ -140,7 +140,7 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Send on Mission',
                 style: TextStyle(
-                  color: _selectedIndex == 2 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 2 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
               selected: _selectedIndex == 2,
@@ -154,7 +154,7 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Choose your mission',
                 style: TextStyle(
-                  color: _selectedIndex == 3 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 3 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
               selected: _selectedIndex == 3,
@@ -168,7 +168,7 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Contact',
                 style: TextStyle(
-                  color: _selectedIndex == 4 ? Colors.blueGrey[300] : Colors.grey,
+                  color: _selectedIndex == 4 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
               selected: _selectedIndex == 4,
@@ -182,7 +182,7 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Profile',
                 style: TextStyle(
-                  color: _selectedIndex == 5 ? Colors.blueGrey[300] : Colors.grey, // Profile is now at index 5
+                  color: _selectedIndex == 5 ? const Color(0xFF819ca9) : Colors.grey, // Profile is now at index 5
                 ),
               ),
               selected: _selectedIndex == 5, // Profile is now at index 5
@@ -196,14 +196,16 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Logout',
                 style: TextStyle(
-                  color: _selectedIndex == 6 ? Colors.blueGrey[300] : Colors.grey, // Logout is now at index 6
+                  color: _selectedIndex == 6 ? const Color(0xFF819ca9) : Colors.grey, // Logout is now at index 6
                 ),
               ),
               selected: _selectedIndex == 6, // Logout is now at index 6
               selectedTileColor: Colors.black54,
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
-                // The HomeScreen StreamBuilder will automatically navigate to LoginScreen
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
               },
             ),
           ],

@@ -45,7 +45,7 @@ class ContactScreen extends StatelessWidget {
                   const SizedBox(height: 32),
                   Card(
                     elevation: 8,
-                    color: Colors.grey.shade900.withOpacity(0.8),
+                    color: Colors.grey.shade900,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),

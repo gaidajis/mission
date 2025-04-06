@@ -119,9 +119,9 @@ class _SendOnMissionScreenState extends State<SendOnMissionScreen> {
       // 8. Save Data Online to Firebase RTDB
       await newMissionRef.set(missionData);
 
-      if (!context.mounted) return;
-
       // 9. Show Accurate Success Feedback
+      if (!mounted) return;
+
       _showSuccessDialog(missionId);
 
     } catch (e) {
@@ -129,7 +129,8 @@ class _SendOnMissionScreenState extends State<SendOnMissionScreen> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to post mission. Please try again. Error: $e'),
+          content:
+              Text('Failed to post mission. Please try again. Error: $e'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -215,26 +216,26 @@ class _SendOnMissionScreenState extends State<SendOnMissionScreen> {
           labelText: displayLabel,
           labelStyle: TextStyle(color: Colors.grey[400]),
           floatingLabelStyle: const TextStyle(color: Colors.amberAccent), // Style when focused
-          prefixIcon: Icon(icon, color: Colors.grey[400], size: 20),
+          prefixIcon: Icon(icon, color: Colors.grey[400], size: 20), // Icon color matches label
           filled: true,
-          fillColor: Colors.black.withOpacity(0.3),
+          fillColor: Colors.black,
           contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 12.0),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide.none,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-             borderSide: BorderSide(color: Colors.grey[700]!, width: 0.5),
-          ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: const BorderSide(color: Colors.amberAccent, width: 1),
           ),
-          errorBorder: OutlineInputBorder(
+          enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+             borderSide: BorderSide(color: Colors.grey[700]!, width: 0.5),
           ),
+           errorBorder: OutlineInputBorder(
+             borderRadius: BorderRadius.circular(8.0),
+             borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
@@ -277,11 +278,11 @@ class _SendOnMissionScreenState extends State<SendOnMissionScreen> {
             });
           },
           borderRadius: BorderRadius.circular(8), // Match container radius
-          splashColor: selectedColor.withOpacity(0.4),
+          splashColor: selectedColor, // Add a splash effect
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: isSelected ? selectedColor.withOpacity(0.3) : cardColor,
+              color: isSelected ? selectedColor : cardColor,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: isSelected ? selectedColor : borderColor,
@@ -467,7 +468,7 @@ class _SendOnMissionScreenState extends State<SendOnMissionScreen> {
                     ),
                     elevation: 4,
                     // Style for disabled state (when loading)
-                    disabledBackgroundColor: Colors.amberAccent.withOpacity(0.5),
+                    disabledBackgroundColor: Colors.amberAccent, // Dimmed when loading
                   ),
                 ),
                 const SizedBox(height: 20), // Padding at the bottom
