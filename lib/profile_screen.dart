@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'mission_details_screen.dart'; // Ensure this screen exists and accepts missionId
-import 'dart:developer'; // For logging
+import 'package:image_picker/image_picker.dart'; // Import Image Picker
+import 'mission_details_screen.dart';
+import 'dart:developer';
+import 'dart:io'; // For File
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,45 +17,48 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
-  // --- State Variables ---
   late TabController _tabController;
   final _formKey = GlobalKey<FormState>();
   User? _currentUser;
-  bool _isLoadingProfile = true; // Loading indicator for profile data
-  bool _isSavingProfile = false; // Loading indicator for saving profile
+  bool _isLoadingProfile = true;
+  bool _isSavingProfile = false;
+  bool _isEditing = false;
+  String? _profilePhotoUrl;
+  File? _profilePhotoFile; // To store the selected image file
 
-  // Profile Data Controllers / Variables
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneNumberController = TextEditingController();
-  String _email = ''; // Email usually comes from Auth, not DB profile
-  String _countryCode = '+41'; // Default Switzerland
+  String _email = '';
+  String _countryCode = '+41';
 
-  // Firebase References
   DatabaseReference? _userProfileRef;
   final DatabaseReference _missionsRef = FirebaseDatabase.instance.ref('missions');
+  final FirebaseStorage _storage = FirebaseStorage.instance; // Firebase Storage instance
+  final ImagePicker _picker = ImagePicker(); // Image Picker instance
 
-  // --- Lifecycle Methods ---
+  static const TextStyle inputLabelStyle = TextStyle(color: Colors.grey);
+  static const TextStyle inputTextStyle = TextStyle(color: Colors.white);
+  static const TextStyle profileViewLabelStyle = TextStyle(color: Colors.grey);
+  static const TextStyle profileViewValueStyle = TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this); // 3 Tabs: Profile, Posted, Accepted
+    _tabController = TabController(length: 3, vsync: this);
     _currentUser = FirebaseAuth.instance.currentUser;
 
     if (_currentUser == null) {
-      // Handle case where user is somehow null (shouldn't happen if screen is protected)
       log("Error: Current user is null in ProfileScreen initState.");
-      // Potentially navigate back to login or show an error message
       WidgetsBinding.instance.addPostFrameCallback((_) {
-         if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                   const SnackBar(content: Text("User not logged in!"), backgroundColor: Colors.red));
-              // Consider Navigator.pop(context); or redirecting
-         }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("User not logged in!"), backgroundColor: Colors.red));
+        }
       });
     } else {
       _userProfileRef = FirebaseDatabase.instance.ref('users/${_currentUser!.uid}/profile');
-      _email = _currentUser!.email ?? 'No Email'; // Get email from Auth
+      _email = _currentUser!.email ?? 'No Email';
       _loadUserProfile();
     }
   }
@@ -66,9 +72,6 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     super.dispose();
   }
 
-  // --- Data Handling Methods ---
-
-  /// Loads user profile data from Firebase RTDB.
   Future<void> _loadUserProfile() async {
     if (_userProfileRef == null) return;
     setState(() => _isLoadingProfile = true);
@@ -79,22 +82,20 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
         setState(() {
           _firstNameController.text = data['firstName'] ?? '';
           _lastNameController.text = data['lastName'] ?? '';
-          _countryCode = data['countryCode'] ?? '+41'; // Default to CH if not set
-           // Handle phone number potentially stored with country code
+          _countryCode = data['countryCode'] ?? '+41';
           String fullPhone = data['phoneNumber'] ?? '';
           if (fullPhone.startsWith(_countryCode)) {
-             // Extract number part if stored with code
-             _phoneNumberController.text = fullPhone.substring(_countryCode.length).trim();
+            _phoneNumberController.text = fullPhone.substring(_countryCode.length).trim();
           } else {
-             _phoneNumberController.text = fullPhone;
+            _phoneNumberController.text = fullPhone;
           }
+          _profilePhotoUrl = data['profilePhotoUrl'];
         });
       } else if (mounted) {
-         log("Profile data not found for user ${_currentUser?.uid}. Creating default profile node might be needed.");
-         // Set default values or indicate profile needs setup
-         _firstNameController.text = '';
-         _lastNameController.text = '';
-         _phoneNumberController.text = '';
+        log("Profile data not found for user ${_currentUser?.uid}. Creating default profile node might be needed.");
+        _firstNameController.text = '';
+        _lastNameController.text = '';
+        _phoneNumberController.text = '';
       }
     } catch (e) {
       log("Error loading profile: $e");
@@ -110,42 +111,50 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     }
   }
 
-  /// Saves updated profile data to Firebase RTDB.
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) {
-      return; // Don't save if form is invalid
+      return;
     }
     if (_userProfileRef == null) {
-       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error: User reference not available."), backgroundColor: Colors.red),
-       );
-       return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error: User reference not available."), backgroundColor: Colors.red),
+      );
+      return;
     }
 
     setState(() => _isSavingProfile = true);
 
     try {
+      // Upload profile photo if a new one is selected
+      if (_profilePhotoFile != null) {
+        final ref = _storage.ref().child('users/${_currentUser!.uid}/profile_photo.jpg');
+        await ref.putFile(_profilePhotoFile!);
+        _profilePhotoUrl = await ref.getDownloadURL();
+      }
+
       await _userProfileRef!.update({
         'firstName': _firstNameController.text.trim(),
         'lastName': _lastNameController.text.trim(),
-        'phoneNumber': _phoneNumberController.text.trim(), // Store just the number
-        'countryCode': _countryCode, // Store country code separately
-         // Note: Email is usually managed via FirebaseAuth, not updated here.
-         // If you need to update email, use _currentUser.updateEmail()
-         // which requires re-authentication typically.
+        'phoneNumber': _phoneNumberController.text.trim(),
+        'countryCode': _countryCode,
+        if (_profilePhotoUrl != null) 'profilePhotoUrl': _profilePhotoUrl,
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Profile updated successfully!'), backgroundColor: Colors.green),
         );
+        setState(() {
+          _isEditing = false;
+          _profilePhotoFile = null; // Reset selected file after saving
+        });
       }
     } catch (e) {
-      log("Error saving profile: $e");      
+      log("Error saving profile: $e");
       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error saving profile: $e"), backgroundColor: Colors.red),
-         );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error saving profile: $e"), backgroundColor: Colors.red),
+        );
       }
     } finally {
       if (mounted) {
@@ -154,174 +163,290 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     }
   }
 
-  // --- UI Building Methods ---
-
-  /// Builds the content for the "Edit Profile" tab.
-  Widget _buildEditProfileTab() {
-    if (_isLoadingProfile) {
-      return const Center(child: CircularProgressIndicator(color: Colors.amberAccent));
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _profilePhotoFile = File(image.path);
+      });
     }
+  }
 
-    // Style definitions
-    const inputLabelStyle = TextStyle(color: Colors.grey);
-    const inputTextStyle = TextStyle(color: Colors.white);
-    const focusedBorder = UnderlineInputBorder(borderSide: BorderSide(color: Colors.amberAccent));
-    const enabledBorder = UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey));
-
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Form(
-        key: _formKey,
-        child: ListView(
-          children: <Widget>[
-             const SizedBox(height: 16),
-             const Center(
-               child: Icon(Icons.person_pin, size: 80, color: Colors.grey),
-             ),
-             const SizedBox(height: 24),
-
-            // First Name
-            TextFormField(
-              controller: _firstNameController,
-              decoration: const InputDecoration(
-                labelText: 'First Name *',
-                labelStyle: inputLabelStyle,
-                enabledBorder: enabledBorder,
-                focusedBorder: focusedBorder,
-                prefixIcon: Icon(Icons.person_outline, color: Colors.grey, size: 20),
-              ),
-              style: inputTextStyle,
-              validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter your first name' : null,
-            ),
-            const SizedBox(height: 16),
-
-            // Last Name
-            TextFormField(
-              controller: _lastNameController,
-              decoration: const InputDecoration(
-                labelText: 'Last Name *',
-                labelStyle: inputLabelStyle,
-                enabledBorder: enabledBorder,
-                focusedBorder: focusedBorder,
-                prefixIcon: Icon(Icons.person_outline, color: Colors.grey, size: 20),
-              ),
-              style: inputTextStyle,
-              validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter your last name' : null,
-            ),
-            const SizedBox(height: 16),
-
-            // Email (Read-only)
-            TextFormField(
-              initialValue: _email, // Set initial value, but make read-only
-              readOnly: true, // User cannot edit email here
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                labelStyle: inputLabelStyle,
-                enabledBorder: enabledBorder, // Use same border style
-                focusedBorder: enabledBorder, // No focus highlight for read-only
-                prefixIcon: Icon(Icons.email_outlined, color: Colors.grey, size: 20),
-              ),
-              style: TextStyle(color: Colors.grey[500]), // Dimmer color for read-only
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-
-            // Phone Number
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end, // Align baseline
-              children: [
-                CountryCodePicker(
-                  onChanged: (CountryCode code) {
-                    setState(() {
-                      _countryCode = code.dialCode ?? '+41';
-                    });
-                  },
-                  initialSelection: _countryCode, // Set based on loaded data or default
-                  favorite: const ['+41', '+49', '+33', '+39'], // CH, DE, FR, IT
-                  backgroundColor: Colors.grey[850], // Dark background for dialog
-                  dialogBackgroundColor: Colors.grey[850],
-                   textStyle: inputTextStyle,
-                   searchStyle: inputTextStyle,
-                   dialogTextStyle: inputTextStyle,
-                   closeIcon: const Icon(Icons.close, color: Colors.white), // Ensure close icon is visible
-                  flagWidth: 25, // Adjust flag size
-                   padding: const EdgeInsets.only(bottom: 12, right: 0), // Adjust padding to align with TextFormField baseline
-                ),
-                 // Give space between picker and field
-                 const SizedBox(width: 8),
-                Expanded(
-                  child: TextFormField(
-                    controller: _phoneNumberController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone Number *',
-                      labelStyle: inputLabelStyle,
-                      enabledBorder: enabledBorder,
-                      focusedBorder: focusedBorder,
-                      // No icon needed here as code is separate
-                    ),
-                    style: inputTextStyle,
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                       // Basic validation (digits, maybe dashes/spaces) - adjust as needed
-                       if (!RegExp(r'^[0-9\s-]*$').hasMatch(value)) {
-                          return 'Enter a valid phone number';
-                       }
-                      return null;
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            // Save Button
-            ElevatedButton.icon(
-              onPressed: _isSavingProfile ? null : _saveProfile,
-              icon: _isSavingProfile
-                  ? Container(
-                      width: 18, height: 18,
-                      margin: const EdgeInsets.only(right: 8),
-                      child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
-                  : const Icon(Icons.save, color: Colors.black, size: 20),
-              label: Text(
-                _isSavingProfile ? 'Saving...' : 'Save Profile',
-                style: GoogleFonts.genos(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amberAccent,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                disabledBackgroundColor: Colors.amberAccent,
-              ),
-            ),
-             const SizedBox(height: 40),
-             // Sign Out Button
-             TextButton.icon(
-                  icon: const Icon(Icons.logout, color: Colors.redAccent, size: 18),
-                  label: const Text('Sign Out', style: TextStyle(color: Colors.redAccent)),
-                  onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        if(mounted){
-                           Navigator.pushReplacementNamed(context, '/login');
-                        }
-                        
-                  },),
+  Widget _buildProfileInfoRow(IconData icon, String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.amberAccent),
+            const SizedBox(width: 12),
+            Text(label, style: profileViewLabelStyle),
           ],
+        ),
+        const SizedBox(height: 8),
+        Text(value, style: profileViewValueStyle),
+        const Divider(color: Colors.grey),
+      ],
+    );
+  }
+
+  Widget _buildProfileView() {
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Card(
+            color: Colors.grey[900],
+            elevation: 4,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        CircleAvatar(
+                          radius: 70,
+                          backgroundColor: Colors.grey.shade700,
+                          backgroundImage: _profilePhotoUrl != null
+                              ? NetworkImage(_profilePhotoUrl!) as ImageProvider<Object>?
+                              : null,
+                          child: _profilePhotoUrl == null
+                              ? const Icon(Icons.person, size: 70, color: Colors.white)
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  _buildProfileInfoRow(Icons.person_outline, 'First Name', _firstNameController.text),
+                  const SizedBox(height: 16),
+                  _buildProfileInfoRow(Icons.person_outline, 'Last Name', _lastNameController.text),
+                  const SizedBox(height: 16),
+                  _buildProfileInfoRow(Icons.email_outlined, 'Email', _email),
+                  const SizedBox(height: 16),
+                  _buildProfileInfoRow(Icons.phone_outlined, 'Phone Number', '$_countryCode ${_phoneNumberController.text}'),
+                  const SizedBox(height: 40),
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() => _isEditing = true);
+                      },
+                      icon: const Icon(Icons.edit, color: Colors.black),
+                      label: Text('Edit Profile', style: GoogleFonts.genos(color: Colors.black, fontSize: 16)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amberAccent,
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildEditProfileTab() {
+    if (_isLoadingProfile) {
+      return const Center(child: CircularProgressIndicator(color: Colors.amberAccent));
+    }
 
-  /// Builds the content for the "Posted Missions" tab.
+    if (!_isEditing) {
+      return _buildProfileView();
+    }
+
+    const focusedBorder = UnderlineInputBorder(borderSide: BorderSide(color: Colors.amberAccent));
+    const enabledBorder = UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey));
+
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                const SizedBox(height: 16),
+                Center(
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      CircleAvatar(
+                        radius: 70,
+                        backgroundColor: Colors.grey.shade700,
+                        backgroundImage: _profilePhotoFile != null
+                            ? FileImage(_profilePhotoFile!) as ImageProvider<Object>?
+                            : _profilePhotoUrl != null
+                                ? NetworkImage(_profilePhotoUrl!) as ImageProvider<Object>?
+                                : null,
+                        child: _profilePhotoFile == null && _profilePhotoUrl == null
+                            ? const Icon(Icons.person, size: 70, color: Colors.white)
+                            : null,
+                      ),
+                      InkWell(
+                        onTap: _pickImage,
+                        child: const CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Colors.amberAccent,
+                          child: Icon(Icons.camera_alt, size: 20, color: Colors.black),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                TextFormField(
+                  controller: _firstNameController,
+                  decoration: InputDecoration(
+                    labelText: 'First Name *',
+                    labelStyle: inputLabelStyle,
+                    enabledBorder: enabledBorder,
+                    focusedBorder: focusedBorder,
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: CircleAvatar(
+                        radius: 14,
+                        backgroundColor: Colors.grey.shade700,
+                        backgroundImage: _profilePhotoFile != null
+                            ? FileImage(_profilePhotoFile!) as ImageProvider<Object>?
+                            : _profilePhotoUrl != null
+                                ? NetworkImage(_profilePhotoUrl!) as ImageProvider<Object>?
+                                : null,
+                        child: _profilePhotoFile == null && _profilePhotoUrl == null
+                            ? const Icon(Icons.person, size: 14, color: Colors.white)
+                            : null,
+                      ),
+                    ),
+                  ),
+                  style: inputTextStyle,
+                  validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter your first name' : null,
+                ),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Last Name *',
+                    labelStyle: inputLabelStyle,
+                    enabledBorder: enabledBorder,
+                    focusedBorder: focusedBorder,
+                    prefixIcon: Icon(Icons.person_outline, color: Colors.grey, size: 20),
+                  ),
+                  style: inputTextStyle,
+                  validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter your last name' : null,
+                ),
+                const SizedBox(height: 24),
+                TextFormField(
+                  initialValue: _email,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: inputLabelStyle,
+                    enabledBorder: enabledBorder,
+                    focusedBorder: focusedBorder,
+                    prefixIcon: Icon(Icons.email_outlined, color: Colors.grey, size: 20),
+                  ),
+                  style: TextStyle(color: Colors.grey[500]),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CountryCodePicker(
+                      onChanged: (CountryCode code) {
+                        setState(() {
+                          _countryCode = code.dialCode ?? '+41';
+                        });
+                      },
+                      initialSelection: _countryCode,
+                      favorite: const ['+41', '+49', '+33', '+39'],
+                      backgroundColor: Colors.grey[850],
+                      dialogBackgroundColor: Colors.grey[850],
+                      textStyle: inputTextStyle,
+                      searchStyle: inputTextStyle,
+                      dialogTextStyle: inputTextStyle,
+                      closeIcon: const Icon(Icons.close, color: Colors.white),
+                      flagWidth: 25,
+                      padding: const EdgeInsets.only(bottom: 12, right: 0),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _phoneNumberController,
+                        decoration: const InputDecoration(
+                          labelText: 'Phone Number *',
+                          labelStyle: inputLabelStyle,
+                          enabledBorder: enabledBorder,
+                          focusedBorder: focusedBorder,
+                        ),
+                        style: inputTextStyle,
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter your phone number';
+                          }
+                          if (!RegExp(r'^[0-9\s-]*$').hasMatch(value)) {
+                            return 'Enter a valid phone number';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                ElevatedButton.icon(
+                  onPressed: _isSavingProfile ? null : _saveProfile,
+                  icon: _isSavingProfile
+                      ? Container(
+                          width: 18, height: 18,
+                          margin: const EdgeInsets.only(right: 8),
+                          child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                      : const Icon(Icons.save, color: Colors.black, size: 20),
+                  label: Text(
+                    _isSavingProfile ? 'Saving...' : 'Save Profile',
+                    style: GoogleFonts.genos(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amberAccent,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    disabledBackgroundColor: Colors.amberAccent,
+                  ),
+                ),
+                const SizedBox(height: 40),
+                TextButton.icon(
+                  icon: const Icon(Icons.logout, color: Colors.redAccent, size: 18),
+                  label: const Text('Sign Out', style: TextStyle(color: Colors.redAccent)),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    if (mounted) {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPostedMissionsTab() {
     if (_currentUser == null) {
       return const Center(child: Text('Not logged in.', style: TextStyle(color: Colors.grey)));
     }
-    // Query for missions created by the current user
     final query = _missionsRef
         .orderByChild('userId')
         .equalTo(_currentUser!.uid);
@@ -329,12 +454,10 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     return _buildMissionsList(query.onValue, "You haven't posted any missions yet.");
   }
 
-  /// Builds the content for the "Accepted Missions" tab.
   Widget _buildAcceptedMissionsTab() {
     if (_currentUser == null) {
       return const Center(child: Text('Not logged in.', style: TextStyle(color: Colors.grey)));
     }
-    // Query for missions assigned to the current user
     final query = _missionsRef
         .orderByChild('assignedUserId')
         .equalTo(_currentUser!.uid);
@@ -342,8 +465,6 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     return _buildMissionsList(query.onValue, "You haven't accepted any missions yet.");
   }
 
-
-  /// Generic function to build a list of missions using a StreamBuilder.
   Widget _buildMissionsList(Stream<DatabaseEvent> stream, String emptyListMessage) {
     const Color textColor = Colors.grey;
     const Color cardColor = Color(0xFF2A2A2A);
@@ -363,70 +484,65 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
           return Center(child: Text(emptyListMessage, style: const TextStyle(color: Colors.grey)));
         }
 
-        // Data is available, process it
         final missionsMap = Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
         final missionsList = missionsMap.entries.map((entry) {
-          // Important: Ensure data consistency or handle potential nulls robustly
-           return Map<String, dynamic>.from(entry.value as Map)..putIfAbsent('missionId', () => entry.key);
+          return Map<String, dynamic>.from(entry.value as Map)..putIfAbsent('missionId', () => entry.key);
         }).toList();
 
-        // Optional: Sort missions, e.g., by creation date descending
         missionsList.sort((a, b) {
-             final timeA = a['createdAt'] ?? '';
-             final timeB = b['createdAt'] ?? '';
-              // Handle potential parsing errors if needed
-             return timeB.compareTo(timeA); // Descending
-           });
+          final timeA = a['createdAt'] ?? '';
+          final timeB = b['createdAt'] ?? '';
+          return timeB.compareTo(timeA);
+        });
 
         if (missionsList.isEmpty) {
           return Center(child: Text(emptyListMessage, style: const TextStyle(color: Colors.grey)));
         }
 
-        // Build the list view
         return ListView.builder(
           padding: const EdgeInsets.all(10.0),
           itemCount: missionsList.length,
           itemBuilder: (context, index) {
             final missionData = missionsList[index];
-            final missionId = missionData['missionId'] as String; // Should always exist now
-             final title = missionData['description'] as String? ?? 'No Description';
-             final shortDesc = title.length > 60 ? '${title.substring(0, 60)}...' : title; // Snippet
-             final location = missionData['locationDescription'] as String? ?? 'No Location';
-             final status = missionData['status'] as String? ?? 'Unknown';
-             final category = missionData['category'] as String? ?? 'N/A';
+            final missionId = missionData['missionId'] as String;
+            final title = missionData['description'] as String? ?? 'No Description';
+            final shortDesc = title.length > 60 ? '${title.substring(0, 60)}...' : title;
+            final location = missionData['locationDescription'] as String? ?? 'No Location';
+            final status = missionData['status'] as String? ?? 'Unknown';
+            final category = missionData['category'] as String? ?? 'N/A';
 
             return Card(
-               margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
-               color: cardColor,
-               shape: RoundedRectangleBorder(
-                 borderRadius: BorderRadius.circular(8),
-                 side: BorderSide(color: borderColor, width: 0.5),
-               ),
-               child: ListTile(
+              margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
+              color: cardColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: borderColor, width: 0.5),
+              ),
+              child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                 leading: Icon(_getIconForCategory(category), color: Colors.amberAccent, size: 30),
-                 title: Text(
-                     shortDesc,
-                     style: GoogleFonts.genos(color: textColor, fontWeight: FontWeight.w600, fontSize: 16),
-                     maxLines: 1,
-                     overflow: TextOverflow.ellipsis,
-                  ),
-                 subtitle: Text(
-                    '$location\nStatus: $status',
-                    style: TextStyle(color: textColor, fontSize: 12, height: 1.3),
-                    maxLines: 2,
-                     overflow: TextOverflow.ellipsis,
-                 ),
-                 trailing: const Icon(Icons.chevron_right, color: textColor),
-                 onTap: () {
-                   Navigator.push(
-                     context,
-                     MaterialPageRoute(
-                       builder: (context) => MissionDetailsScreen(missionId: missionId),
-                     ),
-                   );
-                 },
-               ),
+                leading: Icon(_getIconForCategory(category), color: Colors.amberAccent, size: 30),
+                title: Text(
+                  shortDesc,
+                  style: GoogleFonts.genos(color: textColor, fontWeight: FontWeight.w600, fontSize: 16),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  '$location\nStatus: $status',
+                  style: TextStyle(color: textColor, fontSize: 12, height: 1.3),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: const Icon(Icons.chevron_right, color: textColor),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MissionDetailsScreen(missionId: missionId),
+                    ),
+                  );
+                },
+              ),
             );
           },
         );
@@ -434,34 +550,32 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     );
   }
 
-  // Helper to get an icon based on category (similar to SendOnMissionScreen)
   IconData _getIconForCategory(String category) {
-      switch (category) {
-         case 'Errands': return Icons.directions_run;
-         case 'Transportation': return Icons.local_taxi;
-         case 'Delivery': return Icons.local_shipping;
-         case 'Food': return Icons.restaurant;
-         case 'Social': return Icons.people;
-         case 'Animals': return Icons.pets;
-         case 'Repairs': return Icons.build;
-         case 'Special': return Icons.star;
-         default: return Icons.help_outline;
-      }
-   }
+    switch (category) {
+      case 'Errands': return Icons.directions_run;
+      case 'Transportation': return Icons.local_taxi;
+      case 'Delivery': return Icons.local_shipping;
+      case 'Food': return Icons.restaurant;
+      case 'Social': return Icons.people;
+      case 'Animals': return Icons.pets;
+      case 'Repairs': return Icons.build;
+      case 'Special': return Icons.star;
+      default: return Icons.help_outline;
+    }
+  }
 
 
-  // --- Main Build Method ---
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black87,
-         // Use title based on current tab? Or keep generic? Generic for now.
         title: Text(
-           'My Account', // Changed title
-           style: GoogleFonts.genos(color: Colors.grey[300], fontWeight: FontWeight.bold),
+          'My Account',
+          style: GoogleFonts.genos(color: Colors.grey[300], fontWeight: FontWeight.bold),
         ),
-        flexibleSpace: Container( // Gradient for AppBar background
+        flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.black87, Colors.black],
@@ -471,9 +585,9 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.amberAccent, // Highlight color for selected tab
-          labelColor: Colors.amberAccent, // Color for selected tab label
-          unselectedLabelColor: Colors.grey[400], // Color for unselected tab labels
+          indicatorColor: Colors.amberAccent,
+          labelColor: Colors.amberAccent,
+          unselectedLabelColor: Colors.grey[400],
           tabs: const [
             Tab(icon: Icon(Icons.person), text: 'Profile'),
             Tab(icon: Icon(Icons.publish), text: 'Posted'),
@@ -482,7 +596,6 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
         ),
       ),
       body: Container(
-        // Background Gradient for TabBarView content
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
