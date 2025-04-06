@@ -6,8 +6,8 @@ import 'send_on_mission_screen.dart';
 import 'choose_mission_screen.dart';
 import 'contact_screen.dart';
 import 'how_it_works_screen.dart';
-import 'profile_screen.dart'; // Assuming you have this file
-import 'package:url_launcher/url_launcher.dart'; // For opening the video link
+import 'profile_screen.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart'; // Import the YouTube player package
 
 class MainAppScreen extends StatefulWidget {
   const MainAppScreen({super.key});
@@ -18,8 +18,10 @@ class MainAppScreen extends StatefulWidget {
 
 class MainAppScreenState extends State<MainAppScreen> {
   int _selectedIndex = 0;
-
   late List<Widget> _widgetOptions;
+
+  // Create a YoutubePlayerController
+  late YoutubePlayerController _controller;
 
   @override
   void initState() {
@@ -30,15 +32,28 @@ class MainAppScreenState extends State<MainAppScreen> {
       const SendOnMissionScreen(),
       const ChooseMissionScreen(),
       const ContactScreen(),
-      const ProfileScreen(), // Profile is now in the drawer
+      const ProfileScreen(),
     ];
+
+    // Initialize the YoutubePlayerController with your video ID
+    _controller = YoutubePlayerController(
+      initialVideoId: 'BFTNiMwOhxo', // <--- HERE: Replace 'YOUR_VIDEO_ID' with the actual ID of your YouTube video
+      flags: const YoutubePlayerFlags(
+        autoPlay: false,
+        mute: false,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Dispose of the controller when the widget is removed
+    super.dispose();
   }
 
   Widget _buildHomeScreen() {
     final String missionSummary =
         "The Mission: Connecting global needs with local action. Request assistance for anything, anywhere, and tap into a global network ready to help online and offline. From virtual tasks to real-world support, we're breaking down geographical barriers to make your requests a reality.";
-    final String videoUrl =
-        "https://firebasestorage.googleapis.com/v0/b/mission-37f67.firebasestorage.app/o/invideo-ai-720%20How%20The%20Mission%20App%20Connects%20You%20Globall%202025-04-06.mp4?alt=media&token=3f1e2e27-1b17-4455-a3ff-4246e84626b7";
 
     return Container(
       decoration: const BoxDecoration(
@@ -108,40 +123,16 @@ class MainAppScreenState extends State<MainAppScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () async {
-                  Uri uri = Uri.parse(videoUrl);
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Could not launch video.')),
-                    );
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.play_circle_fill, color: Colors.amber, size: 30),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Watch How The Mission Works',
-                          style: GoogleFonts.roboto(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              YoutubePlayer(
+                controller: _controller,
+                showVideoProgressIndicator: true,
+                progressIndicatorColor: Colors.amber,
+                progressColors: const ProgressBarColors(
+                  playedColor: Colors.amber,
+                  handleColor: Colors.amberAccent,
                 ),
+                onReady: () {
+                },
               ),
               const SizedBox(height: 20),
               // You can add more sections here using Containers if needed
@@ -156,13 +147,12 @@ class MainAppScreenState extends State<MainAppScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    // Navigator.pop(context); // Remove this line to allow the body to update
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Set the background color of the Scaffold to black
+      backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black87,
         title: Row(
@@ -191,14 +181,14 @@ class MainAppScreenState extends State<MainAppScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader( // Removed the Image.asset here
+            const DrawerHeader(
               padding: EdgeInsets.only(left: 16.0, bottom: 16.0, top: 40.0),
               decoration: BoxDecoration(
                 color: Color.fromARGB(133, 0, 0, 0),
               ),
               child: Align(
                 alignment: Alignment.bottomLeft,
-                child: SizedBox(height: 60, width: 60), // Placeholder for the removed image
+                child: SizedBox(height: 60, width: 60),
               ),
             ),
             ListTile(
@@ -277,12 +267,12 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Profile',
                 style: TextStyle(
-                  color: _selectedIndex == 5 ? const Color(0xFF819ca9) : Colors.grey, // Profile is now at index 5
+                  color: _selectedIndex == 5 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
-              selected: _selectedIndex == 5, // Profile is now at index 5
+              selected: _selectedIndex == 5,
               selectedTileColor: Colors.black54,
-              onTap: () => _onItemTapped(5), // Profile is now at index 5
+              onTap: () => _onItemTapped(5),
             ),
             const Divider(indent: 16.0, endIndent: 16.0, color: Colors.grey),
             ListTile(
@@ -291,10 +281,10 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Logout',
                 style: TextStyle(
-                  color: _selectedIndex == 6 ? const Color(0xFF819ca9) : Colors.grey, // Logout is now at index 6
+                  color: _selectedIndex == 6 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
-              selected: _selectedIndex == 6, // Logout is now at index 6
+              selected: _selectedIndex == 6,
               selectedTileColor: Colors.black54,
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
