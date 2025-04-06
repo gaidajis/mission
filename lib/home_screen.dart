@@ -39,7 +39,7 @@ class MainAppScreenState extends State<MainAppScreen> {
     _controller = YoutubePlayerController(
       initialVideoId: 'BFTNiMwOhxo', // <--- HERE: Replace 'YOUR_VIDEO_ID' with the actual ID of your YouTube video
       flags: const YoutubePlayerFlags(
-        autoPlay: false,
+        autoPlay: true,
         mute: false,
       ),
     );
