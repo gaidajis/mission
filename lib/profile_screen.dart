@@ -191,47 +191,39 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
   }
 
   Widget _buildProfileView() {
-    return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
-          child: Card(
-            color: Colors.grey[900],
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Stack(
+                alignment: Alignment.bottomRight,
                 children: [
-                  Center(
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        CircleAvatar(
-                          radius: 70,
-                          backgroundColor: Colors.grey.shade700,
-                          backgroundImage: _profilePhotoUrl != null
-                              ? NetworkImage(_profilePhotoUrl!) as ImageProvider<Object>?
-                              : null,
-                          child: _profilePhotoUrl == null
-                              ? const Icon(Icons.person, size: 70, color: Colors.white)
-                              : null,
-                        ),
-                      ],
-                    ),
+                  CircleAvatar(
+                    radius: 70,
+                    backgroundColor: Colors.grey.shade700,
+                    backgroundImage: _profilePhotoUrl != null
+                        ? NetworkImage(_profilePhotoUrl!) as ImageProvider<Object>?
+                        : null,
+                    child: _profilePhotoUrl == null
+                        ? const Icon(Icons.person, size: 70, color: Colors.white)
+                        : null,
                   ),
-                  const SizedBox(height: 32),
-                  _buildProfileInfoRow(Icons.person_outline, 'First Name', _firstNameController.text),
-                  const SizedBox(height: 16),
-                  _buildProfileInfoRow(Icons.person_outline, 'Last Name', _lastNameController.text),
-                  const SizedBox(height: 16),
-                  _buildProfileInfoRow(Icons.email_outlined, 'Email', _email),
-                  const SizedBox(height: 16),
-                  _buildProfileInfoRow(Icons.phone_outlined, 'Phone Number', '$_countryCode ${_phoneNumberController.text}'),
-                  const SizedBox(height: 40),
-                  Center(
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            _buildProfileInfoRow(Icons.person_outline, 'First Name', _firstNameController.text),
+            const SizedBox(height: 16),
+            _buildProfileInfoRow(Icons.person_outline, 'Last Name', _lastNameController.text),
+            const SizedBox(height: 16),
+            _buildProfileInfoRow(Icons.email_outlined, 'Email', _email),
+            const SizedBox(height: 16),
+            _buildProfileInfoRow(Icons.phone_outlined, 'Phone Number', '$_countryCode ${_phoneNumberController.text}'),
+            const SizedBox(height: 40),
+            Center(
                     child: ElevatedButton.icon(
                       onPressed: () {
                         setState(() => _isEditing = true);
@@ -242,19 +234,16 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                         backgroundColor: Colors.amberAccent,
                         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        minimumSize: const Size(double.infinity, 50), // Make button full width
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
+          ],
         ),
       ),
     );
   }
-
-  Widget _buildEditProfileTab() {
+Widget _buildEditProfileTab() {
     if (_isLoadingProfile) {
       return const Center(child: CircularProgressIndicator(color: Colors.amberAccent));
     }
@@ -266,15 +255,14 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     const focusedBorder = UnderlineInputBorder(borderSide: BorderSide(color: Colors.amberAccent));
     const enabledBorder = UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey));
 
-    return Padding(
+    return SingleChildScrollView( // Add this SingleChildScrollView
       padding: const EdgeInsets.all(32.0),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: Form(
             key: _formKey,
-            child: ListView(
-              shrinkWrap: true,
+            child: Column(
               children: <Widget>[
                 const SizedBox(height: 16),
                 Center(
@@ -417,13 +405,12 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                     _isSavingProfile ? 'Saving...' : 'Save Profile',
                     style: GoogleFonts.genos(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amberAccent,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    disabledBackgroundColor: Colors.amberAccent,
-                  ),
-                ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amberAccent,
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        minimumSize: const Size(double.infinity, 50), // Make button full width
+                      ),),
                 const SizedBox(height: 40),
                 TextButton.icon(
                   icon: const Icon(Icons.logout, color: Colors.redAccent, size: 18),
