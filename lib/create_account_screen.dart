@@ -44,6 +44,7 @@ class SignUpScreenState extends State<SignUpScreen> {
       _isPasswordVisible = !_isPasswordVisible;
     });
   }
+
   void _toggleConfirmPasswordVisibility() {
     setState(() {
       _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
@@ -68,7 +69,7 @@ class SignUpScreenState extends State<SignUpScreen> {
         );
 
         // Check if mounted before navigating
-        if (!context.mounted) return;
+        if (!mounted) return;
 
         if (user != null) {
           Navigator.pushReplacement(
@@ -76,7 +77,7 @@ class SignUpScreenState extends State<SignUpScreen> {
             MaterialPageRoute(builder: (context) => const MainAppScreen()), // Ensure MainAppScreen exists
           );
         } else {
-           // This part might not be reached if signUpWithEmailAndPassword throws on failure
+          // This part might not be reached if signUpWithEmailAndPassword throws on failure
           setState(() {
             errorMessage = 'Registration failed. Please try again.';
           });
@@ -95,13 +96,12 @@ class SignUpScreenState extends State<SignUpScreen> {
           // }
         });
       } catch (e) {
-         // Catch other potential errors
-         setState(() {
-           errorMessage = 'An unexpected error occurred: ${e.toString()}';
-         });
-      }
-      finally {
-         // Ensure isLoading is set to false even if context check fails or unexpected error
+        // Catch other potential errors
+        setState(() {
+          errorMessage = 'An unexpected error occurred: ${e.toString()}';
+        });
+      } finally {
+        // Ensure isLoading is set to false even if context check fails or unexpected error
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -109,7 +109,7 @@ class SignUpScreenState extends State<SignUpScreen> {
         }
       }
     } else {
-       // Optional: Show a generic message if form validation fails
+      // Optional: Show a generic message if form validation fails
       // setState(() {
       //   errorMessage = 'Please fix the errors above.';
       // });
@@ -133,7 +133,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.5), // Shadow color
+                    color: Colors.black, // Shadow color
                     spreadRadius: 2,
                     blurRadius: 8,
                     offset: const Offset(0, 4),
@@ -214,7 +214,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                           borderSide: const BorderSide(color: Colors.amber),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                         errorBorder: OutlineInputBorder(
+                        errorBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.redAccent),
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -234,7 +234,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                       ),
                       obscureText: !_isPasswordVisible,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                       validator: (value) {
+                      validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
                         }
@@ -251,7 +251,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                     TextFormField(
                       controller: _confirmPasswordController,
                       focusNode: _confirmPasswordFocusNode,
-                       style: TextStyle(color: Colors.grey[200]),
+                      style: TextStyle(color: Colors.grey[200]),
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
                         labelStyle: TextStyle(color: Colors.grey[400]),
@@ -261,9 +261,9 @@ class SignUpScreenState extends State<SignUpScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.amber),
-                           borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                         errorBorder: OutlineInputBorder(
+                        errorBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.redAccent),
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -275,15 +275,15 @@ class SignUpScreenState extends State<SignUpScreen> {
                         fillColor: Colors.grey[900],
                         suffixIcon: IconButton(
                           icon: Icon(
-                             _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                             color: Colors.grey[500], // Icon color
+                            _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.grey[500], // Icon color
                           ),
                           onPressed: _toggleConfirmPasswordVisibility,
                         ),
                       ),
                       obscureText: !_isConfirmPasswordVisible,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                       validator: (value) {
+                      validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please confirm your password';
                         }
@@ -330,7 +330,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                             )
                           : const Text(
                               'Create Account',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                     ),
                     const SizedBox(height: 16.0),
