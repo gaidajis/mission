@@ -36,16 +36,24 @@ class MainAppScreenState extends State<MainAppScreen> {
   }
 
   Widget _buildHomeScreen() {
+    final currentUser = AuthService().getCurrentUser();
+    if (currentUser == null) {
+      return const Center(child: Text('User not logged in'));
+    }
     return FutureBuilder<DocumentSnapshot>(
       future: FirebaseFirestore.instance
           .collection('users')
-          .doc(AuthService().getCurrentUser()?.uid)
-          .get(),
+          .doc(currentUser.uid)
+          .get()
+          .catchError((error) {
+        print("Error fetching user data: $error");
+        return null; // Or handle the error as needed
+      }),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+        if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists || snapshot.data == null) {
           return const Center(child: Text('Error loading user data'));
         }
         final userData = snapshot.data!.data() as Map<String, dynamic>?;
