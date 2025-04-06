@@ -79,7 +79,7 @@ class SignUpScreenState extends State<SignUpScreen> {
         } else {
           // This part might not be reached if signUpWithEmailAndPassword throws on failure
           setState(() {
-            errorMessage = 'Registration failed. Please try again.';
+            errorMessage = 'This email is already in use. Please use a different email.';
           });
         }
       } on FirebaseAuthException catch (e) {
