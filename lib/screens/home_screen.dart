@@ -1,15 +1,17 @@
-// lib/home_screen.dart
+// lib/screens/home_screen.dart
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
+
 import 'send_on_mission_screen.dart';
 import 'choose_mission_screen.dart';
 import 'contact_screen.dart';
 import 'how_it_works_screen.dart';
-import 'profile_screen.dart'; // Assuming you have this file
-
-import 'package:video_player/video_player.dart'; // Import video_player
-import 'package:chewie/chewie.dart'; // Import chewie
+import 'profile_screen.dart';
+import '../widgets/specific/home_screen_widgets/mission_info_card.dart';
+import '../widgets/specific/home_screen_widgets/video_player_widget.dart';
 
 class MainAppScreen extends StatefulWidget {
   const MainAppScreen({super.key});
@@ -34,7 +36,7 @@ class MainAppScreenState extends State<MainAppScreen> {
       const SendOnMissionScreen(),
       const ChooseMissionScreen(),
       const ContactScreen(),
-      const ProfileScreen(), // Profile is now in the drawer
+      const ProfileScreen(),
     ];
 
     _videoPlayerController = VideoPlayerController.asset(
@@ -51,7 +53,6 @@ class MainAppScreenState extends State<MainAppScreen> {
         videoPlayerController: _videoPlayerController,
         autoPlay: false,
         looping: false,
-        // Add more configuration options as needed
       );
     });
   }
@@ -106,43 +107,9 @@ class MainAppScreenState extends State<MainAppScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'The Mission',
-                      style: GoogleFonts.genos(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.amber,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      missionSummary,
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              MissionInfoCard(missionSummary: missionSummary),
               const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: _chewieController != null
-                    ? Chewie(controller: _chewieController!)
-                    : const CircularProgressIndicator(),
-              ),
+              VideoPlayerWidget(chewieController: _chewieController),
             ],
           ),
         ),
@@ -159,7 +126,7 @@ class MainAppScreenState extends State<MainAppScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Set the background color of the Scaffold to black
+      backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black87,
         title: Row(
@@ -188,14 +155,14 @@ class MainAppScreenState extends State<MainAppScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader( // Removed the Image.asset here
+            const DrawerHeader(
               padding: EdgeInsets.only(left: 16.0, bottom: 16.0, top: 40.0),
               decoration: BoxDecoration(
                 color: Color.fromARGB(133, 0, 0, 0),
               ),
               child: Align(
                 alignment: Alignment.bottomLeft,
-                child: SizedBox(height: 60, width: 60), // Placeholder for the removed image
+                child: SizedBox(height: 60, width: 60),
               ),
             ),
             ListTile(
@@ -274,12 +241,12 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Profile',
                 style: TextStyle(
-                  color: _selectedIndex == 5 ? const Color(0xFF819ca9) : Colors.grey, // Profile is now at index 5
+                  color: _selectedIndex == 5 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
-              selected: _selectedIndex == 5, // Profile is now at index 5
+              selected: _selectedIndex == 5,
               selectedTileColor: Colors.black54,
-              onTap: () => _onItemTapped(5), // Profile is now at index 5
+              onTap: () => _onItemTapped(5),
             ),
             const Divider(indent: 16.0, endIndent: 16.0, color: Colors.grey),
             ListTile(
@@ -288,10 +255,10 @@ class MainAppScreenState extends State<MainAppScreen> {
               title: Text(
                 'Logout',
                 style: TextStyle(
-                  color: _selectedIndex == 6 ? const Color(0xFF819ca9) : Colors.grey, // Logout is now at index 6
+                  color: _selectedIndex == 6 ? const Color(0xFF819ca9) : Colors.grey,
                 ),
               ),
-              selected: _selectedIndex == 6, // Logout is now at index 6
+              selected: _selectedIndex == 6,
               selectedTileColor: Colors.black54,
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
