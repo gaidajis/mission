@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'auth_wrapper.dart';
+import 'screens/auth_wrapper.dart';
+import 'screens/login_screen.dart'; // To use it in routes if needed
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,13 +17,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Disable the debug banner
-      title: 'The Mission', // Set the application title
-      home: const AuthWrapper(), // Set AuthWrapper as the home screen
-      // Consider adding routes here if you navigate to MainAppScreen from AuthWrapper
-      // routes: {
-      //   '/main': (context) => const MainAppScreen(),
-      // },
+      debugShowCheckedModeBanner: false,
+      title: 'The Mission',
+      home: const AuthWrapper(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+      },
     );
   }
 }

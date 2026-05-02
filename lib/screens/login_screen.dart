@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mission/home_screen.dart';
-import '../auth_service.dart'; // Make sure this path is correct
-import 'create_account_screen.dart'; // Adjust the import according to your project structure
+import 'home_screen.dart';
+import '../services/auth_service.dart';
+import 'create_account_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthService _authService = AuthService();
   String errorMessage = '';
 
-  // Dispose controllers when the widget is removed from the tree
   @override
   void dispose() {
     _emailController.dispose();
@@ -27,11 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // --- Added Scaffold here ---
     return Scaffold(
-      // Set a background color that matches your app theme
-      backgroundColor: Colors.black, // Or Colors.black87, etc.
-      body: Padding( // The original Padding widget is now the body of the Scaffold
+      backgroundColor: Colors.black,
+      body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -39,52 +36,52 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               padding: const EdgeInsets.all(24.0),
               decoration: BoxDecoration(
-                color: Colors.grey, // Slightly adjusted color/opacity
-                borderRadius: BorderRadius.circular(12), // Slightly larger radius
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black, // Darker shadow
+                    color: Colors.black,
                     spreadRadius: 2,
                     blurRadius: 8,
-                    offset: const Offset(0, 4), // Slightly larger offset
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: Column(
                 children: <Widget>[
-                  Text( // Changed to Text widget, ensure correct styling
+                  Text(
                     'Login',
                     style: TextStyle(
-                      fontSize: 22, // Increased size
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[300], // Lighter color for dark theme
+                      color: Colors.grey[300],
                     ),
                   ),
                   const SizedBox(height: 20),
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: TextStyle(color: Colors.grey[200]), // Text input color
+                    style: TextStyle(color: Colors.grey[200]),
                     decoration: InputDecoration(
                       labelText: 'Email',
                       labelStyle: TextStyle(color: Colors.grey[400]),
-                      enabledBorder: OutlineInputBorder( // Style for normal state
+                      enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey[700]!),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      focusedBorder: OutlineInputBorder( // Style when focused
-                        borderSide: const BorderSide(color: Colors.amber), // Use accent color
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.amber),
                          borderRadius: BorderRadius.circular(8),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[850], // Background color for text field
+                      fillColor: Colors.grey[850],
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    style: TextStyle(color: Colors.grey[200]), // Text input color
+                    style: TextStyle(color: Colors.grey[200]),
                     decoration: InputDecoration(
                       labelText: 'Password',
                       labelStyle: TextStyle(color: Colors.grey[400]),
@@ -101,23 +98,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Display error message if it's not empty
                   if (errorMessage.isNotEmpty)
-                    Padding( // Added padding around error message
+                    Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
                         errorMessage,
-                        style: const TextStyle(color: Colors.redAccent, fontSize: 14), // Adjusted style
+                        style: const TextStyle(color: Colors.redAccent, fontSize: 14),
                       ),
                     ),
                   const SizedBox(height: 24),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber, // Use accent color
-                      foregroundColor: Colors.black, // Text color on button
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12), // Adjusted padding
+                      backgroundColor: Colors.amber,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      elevation: 3, // Add some elevation
+                      elevation: 3,
                     ),
                     onPressed: () async {
                       String email = _emailController.text.trim();
@@ -129,36 +125,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                         return;
                       }
-                      // Clear previous error message before attempting login
                       setState(() {
                          errorMessage = '';
                       });
 
-                      // Show loading indicator (optional but good UX)
-                      // Consider adding a bool state like _isLoading and show CircularProgressIndicator
-
                       User? user = await _authService.signInWithEmailAndPassword(email, password);
 
-                      // Check if the widget is still mounted before proceeding
                       if (!context.mounted) return;
 
                       if (user != null) {
-                        // Navigate to ProfileScreen on successful login
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => const MainAppScreen()),
                         );
                       } else {
-                        // Update error message on failure
                         setState(() {
-                          errorMessage = 'Login failed. Please check email and password.'; // More user-friendly message
+                          errorMessage = 'Login failed. Please check email and password.';
                         });
                       }
-                      // Hide loading indicator if used
                     },
-                    child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), // Adjusted style
+                    child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
-                  // Add option to create an account the screen name is create_account_screen.dart
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
@@ -169,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: const Text(
                       'Create an account',
-                      style: TextStyle(color: Colors.amber), // Accent color for text
+                      style: TextStyle(color: Colors.amber),
                     ),
                   ),
                 ],
@@ -179,7 +166,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-    // --- End of Scaffold ---
   }
 }
-
