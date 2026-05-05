@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Details | The Mission</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .banner { height: 12px; width: 100%; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+
+        .req-layout { display: flex; gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .req-main { flex: 2; }
+        .req-side { flex: 1; }
+        .sticky-side { position: sticky; top: 2rem; }
+
+        .user-card { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; cursor: pointer; transition: background 0.2s; }
+        .user-card:hover { background: var(--bg-elevated); }
+
+        .tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0; }
+
+        .chat-container { border: 1px solid var(--border); border-radius: 12px; background: var(--bg-surface); overflow: hidden; display: flex; flex-direction: column; height: 500px; }
+        .chat-header { padding: 1rem; border-bottom: 1px solid var(--border); background: var(--bg-elevated); font-weight: 600; }
+        .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+        .chat-input-area { padding: 1rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; }
+
+        .star-rating { display: inline-flex; flex-direction: row-reverse; gap: 0.25rem; font-size: 2rem; cursor: pointer; }
+        .star-rating input { display: none; }
+        .star-rating label { color: var(--border); transition: color 0.2s; }
+        .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: var(--accent-gold); }
+
+        @media (max-width: 768px) {
+            .req-layout { flex-direction: column; padding: 1rem; padding-bottom: 5rem; }
+            .sticky-side { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav style="padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+        <a href="app.html" class="nav-logo" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>←</span> ◎ THE MISSION
+        </a>
+        <div id="nav-auth"></div>
+    </nav>
+
+    <div class="req-layout">
+
+        <div class="req-main">
+            <div id="content-card" class="card" style="padding: 0; overflow: hidden; margin-bottom: 2rem;">
+                <!-- Populated by JS -->
+            </div>
+
+            <h2 class="section-heading mb-4">Mission Discussion</h2>
+            <div class="chat-container">
+                <div class="chat-header">Secure Thread</div>
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" class="form-control" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="req-side">
+            <div class="sticky-side">
+                <div class="card mb-4" id="action-panel">
+                    <!-- Populated by JS contextually -->
+                </div>
+
+                <div class="card" id="stats-panel">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Review Modal (Hidden by default) -->
+    <div id="review-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 400px;">
+            <h3 class="mb-4">Leave a Review</h3>
+            <p class="text-secondary mb-4 caption" id="review-target-name"></p>
+
+            <div class="form-group text-center">
+                <div class="star-rating" id="star-rating">
+                    <input type="radio" id="star5" name="rating" value="5" checked><label for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <textarea id="review-comment" class="form-control" rows="3" placeholder="How did it go?"></textarea>
+            </div>
+
+            <div class="flex gap-2">
+                <button class="btn btn-secondary w-full" onclick="document.getElementById('review-modal').style.display='none'">Cancel</button>
+                <button class="btn btn-primary w-full" onclick="submitReview()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const currentUser = getSession();
+        const urlParams = new URLSearchParams(window.location.search);
+        const reqId = urlParams.get('id');
+        let request = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if(!reqId) { window.location.href = 'app.html'; return; }
+
+            request = getRequestById(reqId);
+            if(!request) {
+                document.body.innerHTML = '<div style="text-align:center; padding: 5rem;"><h1>Mission Not Found</h1><a href="app.html" class="btn btn-primary mt-4">Go Back</a></div>';
+                return;
+            }
+
+            // Setup top nav
+            if(currentUser) {
+                document.getElementById('nav-auth').innerHTML = `
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='profile.html'">
+                        <img class="avatar avatar-sm" src="${getInitialsAvatar(currentUser.name)}" alt="Avatar">
+                        <span class="caption hidden-mobile">${currentUser.name.split(' ')[0]}</span>
+                    </div>
+                `;
+            } else {
+                document.getElementById('nav-auth').innerHTML = `<a href="login.html?redirect=request.html?id=${reqId}" class="btn btn-primary">Login to Accept</a>`;
+            }
+
+            renderContent();
+            renderActionPanel();
+            renderChat();
+        });
+
+        function renderContent() {
+            const cat = CATEGORIES[request.category];
+            const requester = getUserById(request.requesterId);
+            const provider = request.providerId ? getUserById(request.providerId) : null;
+
+            const postedDateFormatted = new Date(request.postedDate).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+
+            let statusBadge = `<span class="badge" style="background-color: var(--accent-teal); color: var(--bg-deep);">Open</span>`;
+            if(request.status === 'in_progress') statusBadge = `<span class="badge" style="background-color: var(--accent-gold); color: var(--bg-deep);">In Progress</span>`;
+            if(request.status === 'completed') statusBadge = `<span class="badge" style="background-color: var(--border); color: var(--text-primary);">Completed</span>`;
+
+            let html = `
+                <div class="banner" style="background: ${cat.color};"></div>
+                <div style="padding: 2rem;">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="chip mb-2" style="color: ${cat.color}; border-color: ${cat.color}40">${cat.icon} ${request.category}</span>
+                            <h1 style="font-size: 2rem; font-weight: 700; line-height: 1.2;">${request.title}</h1>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 mb-6 caption">
+                        ${statusBadge}
+                        <span>Posted ${postedDateFormatted}</span>
+                    </div>
+
+                    <p class="body-text mb-6" style="font-size: 1.1rem; line-height: 1.6; white-space: pre-wrap;">${request.description}</p>
+
+                    <h3 class="section-heading mt-8 mb-4" style="font-size: 1.2rem;">Parties Involved</h3>
+
+                    <p class="caption mb-2">Requester</p>
+                    <div class="user-card" onclick="window.location.href='profile.html?id=${requester.id}'">
+                        <div class="avatar avatar-md">${requester.flag}</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">${requester.name}</div>
+                            <div class="caption">★ ${(requester.reviews && requester.reviews.length ? (requester.reviews.reduce((a,b)=>a+b.rating,0)/requester.reviews.length).toFixed(1) : 'New')} • ${requester.missionsPosted} missions posted</div>
+                        </div>
+                        <div class="caption">View Profile →</div>
+                    </div>
+            `;
+
+            if(provider) {
+                html += `
+                    <p class="caption mt-4 mb-2">Provider</p>
+                    <div class="user-card" style="border-color: var(--accent-teal);" onclick="window.location.href='profile.html?id=${provider.id}'">
+                        <div class="avatar avatar-md">${provider.flag}</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">${provider.name}</div>
+                            <div class="caption">★ ${(provider.reviews && provider.reviews.length ? (provider.reviews.reduce((a,b)=>a+b.rating,0)/provider.reviews.length).toFixed(1) : 'New')} • ${provider.tasksCompleted} tasks completed</div>
+                        </div>
+                        <div class="caption">View Profile →</div>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            document.getElementById('content-card').innerHTML = html;
+
+            // Stats Panel
+            document.getElementById('stats-panel').innerHTML = `
+                <h3 class="mb-4" style="font-size: 1.1rem;">Mission Details</h3>
+                <div class="flex-col gap-3">
+                    <div class="flex justify-between items-center border-bottom pb-2" style="border-bottom: 1px solid var(--border);">
+                        <span class="text-secondary">Budget</span>
+                        <span style="font-weight: 700; color: var(--accent-teal); font-size: 1.2rem;">${formatBudget(request.budget, request.currency)}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-bottom pb-2" style="border-bottom: 1px solid var(--border);">
+                        <span class="text-secondary">Location</span>
+                        <span class="text-right" style="max-width: 60%;">${request.location}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-bottom pb-2" style="border-bottom: 1px solid var(--border);">
+                        <span class="text-secondary">Type</span>
+                        <span>${request.online ? 'Virtual / Online' : 'In-Person / Offline'}</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-secondary">Deadline</span>
+                        <span style="font-weight: 600;">${new Date(request.deadline).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderActionPanel() {
+            const panel = document.getElementById('action-panel');
+
+            if(!currentUser) {
+                panel.innerHTML = `
+                    <h3 class="mb-2">Interested in helping?</h3>
+                    <p class="text-secondary caption mb-4">Log in to accept this mission and connect with the requester.</p>
+                    <a href="login.html" class="btn btn-primary w-full">Login to Accept</a>
+                `;
+                return;
+            }
+
+            const isRequester = currentUser.id === request.requesterId;
+            const isProvider = currentUser.id === request.providerId;
+
+            if(request.status === 'open') {
+                if(isRequester) {
+                    panel.innerHTML = `
+                        <h3 class="mb-4">Your Mission</h3>
+                        <p class="text-secondary caption mb-4">Waiting for a helper to accept this mission.</p>
+                        <button class="btn btn-danger w-full" onclick="cancelMission()">Cancel Mission</button>
+                    `;
+                } else {
+                    panel.innerHTML = `
+                        <h3 class="mb-2">Ready to act?</h3>
+                        <p class="text-secondary caption mb-4">Accept this mission to open a direct channel with the requester.</p>
+                        <button class="btn btn-primary w-full py-3" style="font-size: 1.1rem;" onclick="acceptMission()">✅ Accept Mission</button>
+                    `;
+                }
+            } else if(request.status === 'in_progress') {
+                if(isRequester || isProvider) {
+                    panel.innerHTML = `
+                        <h3 class="mb-2 text-center" style="color: var(--accent-gold);">Mission In Progress</h3>
+                        <p class="text-secondary caption mb-4 text-center">Coordinate via the secure thread.</p>
+                        ${isRequester ? '<button class="btn btn-primary w-full mb-2" onclick="completeMission()">🏁 Mark as Completed</button>' : ''}
+                    `;
+                } else {
+                    panel.innerHTML = `<h3 class="text-center text-secondary">Mission is currently in progress with another user.</h3>`;
+                }
+            } else if(request.status === 'completed') {
+                if(isRequester || isProvider) {
+                    panel.innerHTML = `
+                        <h3 class="mb-2 text-center text-secondary">Mission Completed</h3>
+                        <button class="btn btn-primary w-full mt-2" onclick="showReviewModal()">⭐ Leave a Review</button>
+                    `;
+                } else {
+                    panel.innerHTML = `<h3 class="text-center text-secondary">This mission has been completed.</h3>`;
+                }
+            }
+        }
+
+        // --- ACTIONS ---
+        function acceptMission() {
+            request.providerId = currentUser.id;
+            request.status = 'in_progress';
+            saveRequest(request);
+
+            addMessage(request.id, 'system', `Mission accepted by ${currentUser.name}. Secure channel open.`);
+            showToast("Mission Accepted!");
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        function cancelMission() {
+            if(confirm("Are you sure you want to cancel this mission?")) {
+                deleteRequest(request.id);
+                showToast("Mission cancelled.");
+                setTimeout(() => window.location.href = 'app.html', 1000);
+            }
+        }
+
+        function completeMission() {
+            if(confirm("Mark this mission as successfully completed?")) {
+                request.status = 'completed';
+                saveRequest(request);
+
+                // Update stats
+                const p = getUserById(request.providerId);
+                if(p) { p.tasksCompleted = (p.tasksCompleted||0) + 1; saveUser(p); }
+
+                addMessage(request.id, 'system', `Mission marked as completed by ${currentUser.name}.`);
+                showToast("Mission Completed!");
+                setTimeout(() => location.reload(), 1000);
+            }
+        }
+
+        let reviewTargetId = null;
+        function showReviewModal() {
+            reviewTargetId = (currentUser.id === request.requesterId) ? request.providerId : request.requesterId;
+            const targetUser = getUserById(reviewTargetId);
+            document.getElementById('review-target-name').innerText = `Reviewing ${targetUser.name}`;
+            document.getElementById('review-modal').style.display = 'flex';
+        }
+
+        function submitReview() {
+            const rating = document.querySelector('input[name="rating"]:checked').value;
+            const comment = document.getElementById('review-comment').value;
+
+            addReview(reviewTargetId, currentUser.id, parseInt(rating), comment);
+
+            document.getElementById('review-modal').style.display = 'none';
+            showToast("Review submitted successfully!");
+            renderActionPanel(); // Refresh to potentially hide review button if logic expanded to check if already reviewed
+        }
+
+        // --- CHAT ---
+        function renderChat() {
+            const chatBox = document.getElementById('chat-messages');
+            const input = document.getElementById('chat-input');
+            const isParty = currentUser && (currentUser.id === request.requesterId || currentUser.id === request.providerId);
+
+            if(!isParty && currentUser) {
+                input.disabled = true;
+                input.placeholder = "Only involved parties can send messages.";
+                chatBox.innerHTML = '<div class="text-center text-secondary mt-8">Messages are private.</div>';
+                return;
+            } else if (!currentUser) {
+                input.disabled = true;
+                input.placeholder = "Log in to chat.";
+                chatBox.innerHTML = '<div class="text-center text-secondary mt-8">Log in to view messages.</div>';
+                return;
+            }
+
+            chatBox.innerHTML = '';
+
+            if(!request.messages || request.messages.length === 0) {
+                chatBox.innerHTML = '<div class="text-center text-secondary mt-8 caption">No messages yet.</div>';
+            } else {
+                request.messages.forEach(msg => {
+                    const el = document.createElement('div');
+
+                    if (msg.senderId === 'system') {
+                        el.className = 'text-center caption text-secondary my-2';
+                        el.innerText = msg.text;
+                    } else {
+                        const isOwn = msg.senderId === currentUser.id;
+                        const sender = getUserById(msg.senderId);
+
+                        el.className = `chat-message ${isOwn ? 'own' : 'other'}`;
+                        el.innerHTML = `
+                            <div class="caption mb-1 ${isOwn ? 'text-secondary' : 'text-primary'}" style="opacity:0.8; font-size:0.7rem;">
+                                ${isOwn ? 'You' : sender.name.split(' ')[0]} • ${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </div>
+                            <div>${msg.text}</div>
+                        `;
+                    }
+                    chatBox.appendChild(el);
+                });
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(text) {
+                addMessage(request.id, currentUser.id, text);
+                input.value = '';
+                // Reload request data locally to get new message
+                request = getRequestById(request.id);
+                renderChat();
+            }
+        }
+    </script>
+</body>
+</html>
