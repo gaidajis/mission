@@ -297,10 +297,9 @@
                 const cat = CATEGORIES[req.category];
                 const requester = getUserById(req.requesterId) || { name: 'User', flag: '🌍' };
 
-                const card = document.createElement('div');
+                const card = document.createElement('a');
                 card.className = `card hoverable cat-border ${cat.className}`;
-                card.style.cursor = 'pointer';
-                card.onclick = () => window.location.href = `request.html?id=${req.id}`;
+                card.href = `request.html?id=${req.id}`;
 
                 card.innerHTML = `
                     <div class="flex justify-between items-center mb-3">

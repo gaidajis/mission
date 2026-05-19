@@ -1,0 +1,3 @@
+## 2024-05-15 - Semantic HTML for Navigation Cards
+**Learning:** Using `<div>` elements with `onclick` handlers for navigation breaks expected browser behavior (like opening in new tabs via middle-click or right-click context menus), prevents screen readers from announcing them as links, and fails to provide native keyboard focusability. This pattern was heavily used in this application for Mission cards and User cards.
+**Action:** Replaced interactive `<div>` cards with semantic `<a>` tags globally. Ensured CSS layout properties (`display: block`, `color: inherit`, `text-decoration: none`) were applied to maintain the visual design while gaining native accessibility, focus management (`:focus-visible`), and interaction features for free.

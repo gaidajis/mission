@@ -360,10 +360,9 @@
                 const deadlineColor = deadlineText.includes("Overdue") || deadlineText === "Today" ? "var(--accent-coral)" :
                                      (deadlineText === "1 day left" ? "var(--accent-gold)" : "var(--bg-elevated)");
 
-                const card = document.createElement('div');
+                const card = document.createElement('a');
                 card.className = `card hoverable cat-border ${cat.className}`;
-                card.style.cursor = 'pointer';
-                card.onclick = () => window.location.href = `request.html?id=${req.id}`;
+                card.href = `request.html?id=${req.id}`;
 
                 let statusBadge = '';
                 if(req.status === 'in_progress') statusBadge = `<span class="badge" style="background-color: var(--accent-teal); color: var(--bg-deep);">In Progress</span>`;

@@ -18,6 +18,8 @@
 
         .user-card { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; cursor: pointer; transition: background 0.2s; }
         .user-card:hover { background: var(--bg-elevated); }
+        a.user-card { text-decoration: none; color: inherit; display: flex; }
+        a.user-card:focus-visible { outline: 2px solid var(--accent-teal); outline-offset: 2px; }
 
         .tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0; }
 
@@ -171,27 +173,27 @@
                     <h3 class="section-heading mt-8 mb-4" style="font-size: 1.2rem;">Parties Involved</h3>
 
                     <p class="caption mb-2">Requester</p>
-                    <div class="user-card" onclick="window.location.href='profile.html?id=${requester.id}'">
+                    <a href="profile.html?id=${requester.id}" class="user-card">
                         <div class="avatar avatar-md">${requester.flag}</div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600;">${requester.name}</div>
                             <div class="caption">★ ${(requester.reviews && requester.reviews.length ? (requester.reviews.reduce((a,b)=>a+b.rating,0)/requester.reviews.length).toFixed(1) : 'New')} • ${requester.missionsPosted} missions posted</div>
                         </div>
                         <div class="caption">View Profile →</div>
-                    </div>
+                    </a>
             `;
 
             if(provider) {
                 html += `
                     <p class="caption mt-4 mb-2">Provider</p>
-                    <div class="user-card" style="border-color: var(--accent-teal);" onclick="window.location.href='profile.html?id=${provider.id}'">
+                    <a href="profile.html?id=${provider.id}" class="user-card" style="border-color: var(--accent-teal);">
                         <div class="avatar avatar-md">${provider.flag}</div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600;">${provider.name}</div>
                             <div class="caption">★ ${(provider.reviews && provider.reviews.length ? (provider.reviews.reduce((a,b)=>a+b.rating,0)/provider.reviews.length).toFixed(1) : 'New')} • ${provider.tasksCompleted} tasks completed</div>
                         </div>
                         <div class="caption">View Profile →</div>
-                    </div>
+                    </a>
                 `;
             }
 
