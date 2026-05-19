@@ -125,6 +125,17 @@ h2.section-heading {
   box-shadow: 0 16px 48px rgba(0, 229, 195, 0.2);
 }
 
+a.card.hoverable {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card.hoverable:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: 2px;
+}
+
 /* Layouts */
 .container {
   max-width: 1200px;
