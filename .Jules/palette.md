@@ -1,0 +1,3 @@
+## 2026-05-20 - Disconnected Form Labels
+**Learning:** Across this application, multiple forms use `<label>` tags without the `for` attribute linking to input IDs. Additionally, many inputs rely solely on placeholders without accessible labels. This is an accessibility issue because screen readers do not associate the label with the input, and users cannot click the label to focus the input.
+**Action:** Always ensure that every `<label>` tag has a `for` attribute matching the `id` of its corresponding input, and use `aria-label` for inputs (like search bars or chat boxes) that intentionally omit visible text labels.
