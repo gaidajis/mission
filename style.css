@@ -430,3 +430,10 @@ h2.section-heading {
   align-self: flex-start;
   border-bottom-left-radius: 2px;
 }
+
+/* Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

@@ -1,0 +1,3 @@
+## 2024-05-18 - Add keyboard focus visible styles
+**Learning:** Establishing a baseline `*:focus-visible` CSS rule is a highly effective way to add keyboard accessibility across a custom UI that relies on generic elements (like divs/spans) for interaction, especially when CSS resets don't provide focus indicators by default. This avoids the need to manually trace and add `:focus` styles to every custom interactive component.
+**Action:** Next time working on an application devoid of a component library with built-in focus states, immediately add a global `*:focus-visible` reset mapped to the brand's primary accent color to ensure minimum a11y compliance.
