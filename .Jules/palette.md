@@ -1,0 +1,3 @@
+## 2026-05-25 - Form Labels Missing Explicit "for" Attributes
+**Learning:** Found a widespread pattern across the application where `.form-group` `<label>` elements lacked the `for` attribute to explicitly associate them with their respective `<input>` IDs. This causes significant issues for screen readers. Furthermore, some input elements like search bars, select dropdowns, and chat inputs completely lack `<label>` elements entirely.
+**Action:** Always ensure that all `<label>` elements have a corresponding `for` attribute pointing to an `id`. For form controls without a visible label (e.g. search bars, dropdowns, chat inputs), ensure they receive an explicit `aria-label`.
