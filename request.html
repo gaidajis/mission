@@ -27,9 +27,10 @@
         .chat-input-area { padding: 1rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; }
 
         .star-rating { display: inline-flex; flex-direction: row-reverse; gap: 0.25rem; font-size: 2rem; cursor: pointer; }
-        .star-rating input { display: none; }
-        .star-rating label { color: var(--border); transition: color 0.2s; }
+        .star-rating input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .star-rating label { color: var(--border); transition: color 0.2s; cursor: pointer; }
         .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: var(--accent-gold); }
+        .star-rating input:focus-visible + label { outline: 2px solid var(--accent-teal); outline-offset: 2px; border-radius: 2px; }
 
         @media (max-width: 768px) {
             .req-layout { flex-direction: column; padding: 1rem; padding-bottom: 5rem; }
@@ -87,12 +88,12 @@
             <p class="text-secondary mb-4 caption" id="review-target-name"></p>
 
             <div class="form-group text-center">
-                <div class="star-rating" id="star-rating">
-                    <input type="radio" id="star5" name="rating" value="5" checked><label for="star5">★</label>
-                    <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
-                    <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-                    <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
-                    <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                <div class="star-rating" id="star-rating" role="radiogroup" aria-label="Review Rating">
+                    <input type="radio" id="star5" name="rating" value="5" aria-label="5 stars" checked><label for="star5" aria-hidden="true">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" aria-label="4 stars"><label for="star4" aria-hidden="true">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" aria-label="3 stars"><label for="star3" aria-hidden="true">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" aria-label="2 stars"><label for="star2" aria-hidden="true">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" aria-label="1 star"><label for="star1" aria-hidden="true">★</label>
                 </div>
             </div>
 
