@@ -1,0 +1,3 @@
+## 2024-05-18 - Form Accessibility and Error Handling
+**Learning:** Inputs without explicit `<label for="id">` associations hinder screen readers and remove the ability to click the label text to focus the input. Additionally, relying solely on HTML5 `required` attributes leaves users guessing until they submit, and dynamically appearing error messages without `aria-live` regions go unnoticed by screen reader users.
+**Action:** Always explicitly link `<label for="id">` to `<input id="id">`, provide a visual indicator (like a colored `*`) for required fields before submission, and apply `role="alert"` or `aria-live="polite"` to dynamically toggled error message containers.
