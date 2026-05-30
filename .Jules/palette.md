@@ -1,0 +1,3 @@
+## 2024-05-30 - Form Labels Need 'for' Attributes
+**Learning:** Found an accessibility issue pattern across all forms in the app where `<label>` elements did not have `for` attributes linking them to their corresponding input elements. This prevents screen readers from properly associating the label with the input field.
+**Action:** When creating new forms or updating existing ones in this app, always ensure that every `<label>` has a `for` attribute that exactly matches the `id` of the form field it describes.
