@@ -1,0 +1,3 @@
+## 2024-05-18 - Form Accessibility Pattern
+**Learning:** Found that custom error messages toggled via `display: none` in our vanilla JavaScript form validation were not being announced by screen readers when they appeared.
+**Action:** Always add `aria-live="polite"` to dynamically toggled inline error message elements (`<p class="... error">`) to ensure screen readers announce validation failures seamlessly.
