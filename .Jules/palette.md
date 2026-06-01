@@ -1,0 +1,3 @@
+## 2024-05-18 - Form Labels and Dynamic Error Announcements
+**Learning:** In this vanilla JS application, dynamically toggling inline error messages using `display: none` without `aria-live` means screen readers won't announce the validation failures when they appear.
+**Action:** Always add `aria-live="polite"` to dynamically toggled inline error messages to ensure screen readers announce validation failures seamlessly. Additionally, ensure all `<label>` elements are associated with their respective form inputs using the `for` attribute so they are clickable and announce the field name correctly.
