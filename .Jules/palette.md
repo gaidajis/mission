@@ -1,0 +1,3 @@
+## 2026-06-07 - Form Input Labels and Dynamically Toggled Error Messages
+**Learning:** Screen readers need explicit associations between `<label>` elements and form fields using the `for` attribute. Furthermore, dynamically toggling `display: none` for inline validation messages without `aria-live` means the messages are not announced when they appear.
+**Action:** Always add `for` attributes on `<label>` elements and `aria-live="polite"` to dynamically toggled inline validation elements.
