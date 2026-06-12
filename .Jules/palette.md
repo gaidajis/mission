@@ -1,0 +1,3 @@
+## 2025-02-20 - Adding ARIA live to dynamically toggled error messages
+**Learning:** Form validation error messages that appear dynamically (e.g. by changing `display: none` to `display: block`) must have `aria-live="polite"` so screen readers can announce them. Also, all form fields must have a corresponding `<label>` element with a `for` attribute pointing to the input's `id`.
+**Action:** When creating or fixing forms, always include `aria-live="polite"` on inline error message containers that will toggle visibility, and explicitly link labels to their inputs using `for`.
