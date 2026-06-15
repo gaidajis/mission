@@ -1,0 +1,3 @@
+## 2024-05-24 - Form Accessibility and Dynamic Errors
+**Learning:** Form validation in this vanilla JS app toggles visibility of custom error messages using display: none. Screen readers need aria-live="polite" on these dynamically toggled inline error message elements to announce them when they appear.
+**Action:** Always add aria-live="polite" to dynamically toggled error messages, and ensure all label elements use "for" attributes to associate with their respective form inputs to ensure proper screen reader support.
