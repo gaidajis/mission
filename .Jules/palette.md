@@ -1,0 +1,3 @@
+## 2024-10-24 - Form Label Association and Dynamic Validation Errors Accessibility
+**Learning:** In vanilla HTML/JS applications, custom validation often toggles error messages via `display: none` / `block`. Without an explicit `aria-live` region, screen readers do not announce these dynamically appearing errors. Furthermore, missing `for` attributes on `<label>` elements causes input field accessibility failure, even when inputs are visually adjacent to their labels.
+**Action:** Always ensure inline validation errors use `aria-live="polite"` if toggled dynamically, and always link `<label>` tags with `for` pointing to input `id` attributes.
