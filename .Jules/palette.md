@@ -1,0 +1,3 @@
+## 2026-06-25 - Native App Dynamic Validation
+**Learning:** In a zero-dependency vanilla JS app using simple `display: none` toggles for error messages, dynamic feedback is entirely lost to screen readers without explicit ARIA live regions. Standard form `required` attributes alone are insufficient because custom validation often bypasses or overrides native browser focus handling on failure.
+**Action:** Always pair `display: none` error message toggles with `aria-live="polite"` and ensure `for` attributes are explicitly defined on `<label>` elements so focus jumps correctly, especially when forms sit inside hidden tabs (like login/signup split views).
