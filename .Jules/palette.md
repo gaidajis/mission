@@ -1,0 +1,3 @@
+## 2024-07-01 - Inline Form Error Toggling A11y Pattern
+**Learning:** In this vanilla JS application, form validation toggles visibility of custom error messages using `display: none`. When an element is initially hidden this way and then shown dynamically via JS without an `aria-live` region, screen readers do not announce the error, leaving visually impaired users unaware of validation failures.
+**Action:** Always ensure elements that are dynamically toggled from `display: none` for notifications/errors have `aria-live="polite"` or `aria-live="assertive"` directly on them or their container, and ensure inputs have proper `<label for="...">` associations for comprehensive form accessibility.
