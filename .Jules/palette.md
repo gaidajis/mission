@@ -1,0 +1,3 @@
+## 2024-05-24 - Form Label Associations & Dynamic Errors
+**Learning:** In vanilla HTML/JS applications, `display: none` is often used to toggle form validation error messages. Screen readers will not announce these dynamically appearing errors unless they are explicitly marked as live regions (`aria-live`). Furthermore, forms without proper `for` attributes on labels fail to correctly associate with inputs, hindering screen reader context and reducing the click target area.
+**Action:** Always add `aria-live="polite"` to dynamically toggled inline error messages, and ensure every `<label>` is explicitly associated with its corresponding input using a `for` attribute that matches the input's `id`.
