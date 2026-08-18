@@ -1,0 +1,3 @@
+## 2024-08-18 - Inline Error Accessibility
+**Learning:** This app relies on custom vanilla JS validation that toggles `display: none` on pre-existing `<p>` elements for error messages. Without `aria-live`, screen readers fail to announce these dynamically revealed errors since they don't trigger a page reload or natural focus shift.
+**Action:** Always add `aria-live="polite"` to dynamically toggled inline error messages to ensure they are announced to screen reader users when visibility changes. Ensure form `<label>`s have explicit `for` attribute matching input `id`s for complete form accessibility.
