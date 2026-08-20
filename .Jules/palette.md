@@ -1,0 +1,3 @@
+## 2024-08-20 - Form Validation Accessibility Pattern
+**Learning:** Form validation in this app toggles visibility of custom error messages using `display: none` via JS, rather than using native HTML5 validation UI. Because these elements exist in the DOM but are hidden, screen readers may not announce them when they become visible.
+**Action:** Always add `aria-live="polite"` to dynamically toggled inline error message elements to ensure screen readers announce the validation feedback when it appears. And ensure all `<label>` elements use `for` attributes to associate with their respective form inputs.
