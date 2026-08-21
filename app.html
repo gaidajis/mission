@@ -134,16 +134,16 @@
                     <!-- Step 1 -->
                     <div class="wizard-step active" id="step-1">
                         <div class="form-group">
-                            <label>Mission Title</label>
+                            <label for="post-title">Mission Title</label>
                             <input type="text" id="post-title" class="form-control" required placeholder="e.g. Source a Patek Philippe dealer open on Sunday...">
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
+                            <label for="post-desc">Description</label>
                             <textarea id="post-desc" class="form-control" rows="4" required placeholder="Provide all necessary details..."></textarea>
                         </div>
                         <div class="form-group">
-                            <label>Category</label>
-                            <div class="cat-select-grid" id="post-cat-grid">
+                            <label id="cat-label">Category</label>
+                            <div class="cat-select-grid" id="post-cat-grid" role="group" aria-labelledby="cat-label">
                                 <!-- Populated by JS -->
                             </div>
                             <input type="hidden" id="post-cat" required>
@@ -157,21 +157,21 @@
                     <!-- Step 2 -->
                     <div class="wizard-step" id="step-2">
                         <div class="form-group">
-                            <label>Location</label>
+                            <label for="post-loc">Location</label>
                             <input type="text" id="post-loc" class="form-control" required placeholder="City, Country (or 'Online')">
                             <div class="mt-2 flex gap-2">
-                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 400; color: var(--text-primary);">
+                                <label for="post-online" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 400; color: var(--text-primary);">
                                     <input type="checkbox" id="post-online"> This is a purely online/virtual task
                                 </label>
                             </div>
                         </div>
                         <div class="flex gap-4">
                             <div class="form-group w-full">
-                                <label>Budget Amount</label>
+                                <label for="post-budget">Budget Amount</label>
                                 <input type="number" id="post-budget" class="form-control" required min="5">
                             </div>
                             <div class="form-group" style="width: 120px;">
-                                <label>Currency</label>
+                                <label for="post-currency">Currency</label>
                                 <select id="post-currency" class="form-control">
                                     <option>USD</option><option>EUR</option><option>GBP</option>
                                     <option>CHF</option><option>JPY</option>
@@ -179,7 +179,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Deadline</label>
+                            <label for="post-deadline">Deadline</label>
                             <input type="date" id="post-deadline" class="form-control" required>
                         </div>
                         <div class="flex justify-between mt-8">
